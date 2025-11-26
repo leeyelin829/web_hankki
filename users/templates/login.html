@@ -1,22 +1,178 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>로그인 | 마을한끼</title>
+  <meta charset="UTF-8">
+  <title>로그인 | 마을한끼</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- 폰트 -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 420px;   /* 모바일 폭 */
+      min-height: 100vh;
+      background-color: #ffffff;
+      position: relative;
+      padding: 16px 20px 40px;
+    }
+
+    /* 상단 화면 이름 */
+    .screen-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-top: 4px;
+      margin-bottom: 4px;
+    }
+
+    .screen-subtitle {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 16px;
+    }
+
+    /* 로고/이미지 박스 */
+    .login-hero {
+      width: 100%;
+      height: 140px;
+      border-radius: 12px;
+      border: 1px solid #e0e0e0;
+      background-color: #f8f8f8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #bbbbbb;
+      font-size: 12px;
+      margin: 8px 0 28px;
+    }
+
+    /* 입력 영역 */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .field-label {
+      font-size: 12px;
+      margin-bottom: 4px;
+      color: #555;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 11px 13px;
+      border-radius: 10px;
+      border: 1px solid #dddddd;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .input-field::placeholder {
+      color: #b3b3b3;
+    }
+
+    .input-field:focus {
+      border-color: #ff7f3f;
+      box-shadow: 0 0 0 2px rgba(255, 127, 63, 0.1);
+    }
+
+    /* 버튼은 화면 아래쪽에 깔리는 느낌으로 */
+    .login-bottom {
+      position: absolute;
+      left: 20px;
+      right: 20px;
+      bottom: 24px;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 12px 0;
+      border-radius: 10px;
+      border: none;
+      background-color: #ff7f3f;
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffffff;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .login-btn:hover {
+      background-color: #ff955f;
+    }
+
+    .helper-text {
+      font-size: 11px;
+      color: #999;
+      margin-top: 8px;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
+  <div class="app">
+    <!-- 상단 제목 -->
+    <div class="screen-title">로그인</div>
+    <div class="screen-subtitle">마을 한끼를 이용하려면 먼저 로그인해 주세요.</div>
+
+    <!-- 이미지/배너 영역 (나중에 로고나 그림 넣을 자리) -->
+    <div class="login-hero">
+      로그인 배너 / 로고 이미지 영역
+    </div>
+
+    <!-- 실제 로그인 폼 -->
     <form method="post" action="{% url 'users:login' %}">
-        {% csrf_token %}
-        {% include 'form_errors.html' %}
+      {% csrf_token %}
+
+      <div class="form-group">
         <div>
-            <label>Username</label>
-            <input type="text" name="username" id="username">
+          <div class="field-label">아이디</div>
+          <input
+            type="text"
+            name="username"
+            id="username"
+            class="input-field"
+            placeholder="아이디를 입력해 주세요">
         </div>
+
         <div>
-            <label>Password</label>
-            <input type="text" name="password" id="password">
+          <div class="field-label">비밀번호</div>
+          <input
+            type="password"
+            name="password"
+            id="password"
+            class="input-field"
+            placeholder="비밀번호를 입력해 주세요">
         </div>
-        <button type="submit">Login</button>
+      </div>
+
+      <div class="login-bottom">
+        <button type="submit" class="login-btn">
+          로그인
+        </button>
+
+        <!-- 회원가입 안내 쓰고 싶으면 나중에 여기에 -->
+        <!--
+        <div class="helper-text">
+          아직 계정이 없다면 <a href="{% url 'users:register' %}">회원가입</a>을 해주세요.
+        </div>
+        -->
+      </div>
     </form>
+  </div>
 </body>
 </html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>환영합니다 | 마을한끼</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Noto Sans KR', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #ff7f3f;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .msg {
+      text-align: center;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .sub {
+      margin-top: 6px;
+      font-size: 13px;
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <div class="msg">
+    <span id="welcome-text"></span>
+    <div class="sub">잠시 후 메인 화면으로 이동합니다…</div>
+  </div>
+
+  <script>
+    const messages = [
+      "오늘은 뭘 드실 건가요?",
+      "따뜻한 한 끼 준비해볼까요?",
+      "우리 동네 맛있는 도시락 골라볼까요?",
+      "지금 배고프지 않아요…? 😋",
+      "오늘도 수고했어요, 맛있는 거 먹자요."
+    ];
+
+    const randomIndex = Math.floor(Math.random() * messages.length);
+    const randomMessage = messages[randomIndex];
+
+    document.getElementById("welcome-text").textContent = randomMessage;
+
+    setTimeout(function() {
+      window.location.href = "{% url 'main:home' %}";
+    }, 1500);
+  </script>
+</body>
+</html>

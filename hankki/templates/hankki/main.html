@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>마을 한끼</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- 폰트 -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 420px; /* 모바일 화면 폭 */
+      min-height: 100vh;
+      background-color: #ffffff;
+      position: relative;
+      padding-bottom: 70px; /* 하단 탭바 공간 */
+    }
+
+    /* 헤더 */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .header-left {
+      width: 40px; /* 비워두되 레이아웃 맞추기용 */
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .header-right {
+      display: flex;
+      gap: 10px;
+      font-size: 18px;
+    }
+
+    /* 검색바 */
+    .search-container {
+      padding: 8px 16px 12px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .search-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background-color: #f3f3f3;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 13px;
+      color: #888;
+    }
+
+    /* 히어로 / 대표 배너 → 꽉 찬 사진 자리 */
+    .hero {
+      margin: 0 0 12px;   /* 양 옆 여백 없이 상단에서 꽉 차게 */
+      border-radius: 0;
+      overflow: hidden;
+      height: 180px;      /* 세로 높이 */
+      display: block;
+    }
+
+    /* 퀵 메뉴 */
+    .quick-menu {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      padding: 8px 12px 12px;
+      border-bottom: 8px solid #f5f5f5;
+      text-align: center;
+      font-size: 11px;
+    }
+
+    .quick-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 4px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+    }
+
+    .quick-item:hover {
+      background-color: #fff3e8;
+    }
+
+    .quick-icon {
+      font-size: 32px;
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+
+    /* 섹션 공통 */
+    .section {
+      padding: 12px 16px 4px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .section-subtitle {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 8px;
+    }
+
+    /* 카드 리스트 */
+    .card-list {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 8px;
+    }
+
+    .card-list::-webkit-scrollbar {
+      height: 6px;
+    }
+    .card-list::-webkit-scrollbar-thumb {
+      background: #ddd;
+      border-radius: 999px;
+    }
+
+    .meal-card {
+      min-width: 160px;
+      background-color: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    /* 📸 사진 들어갈 자리 */
+    .meal-image {
+      height: 90px;
+      background-color: #eeeeee;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #bbbbbb;
+      font-size: 12px;
+    }
+
+    .meal-body {
+      padding: 8px 10px 10px;
+    }
+
+    .meal-badge {
+      font-size: 10px;
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background-color: #fff3e8;
+      color: #ff8f4f;
+      margin-bottom: 4px;
+    }
+
+    .meal-name {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .meal-desc {
+      font-size: 11px;
+      color: #777;
+      margin-bottom: 4px;
+    }
+
+    .meal-info {
+      font-size: 10px;
+      color: #999;
+      margin-bottom: 4px;
+    }
+
+    .meal-bottom {
+      display: flex;
+      align-items: center;
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    .meal-rating {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      color: #f4a100;
+    }
+
+    /* 👉 카드 리스트 끝에 붙는 '더보기' 카드 */
+    .more-card {
+      min-width: 80px;
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px dashed #ff7f3f;
+      background-color: #fffaf5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #ff7f3f;
+      flex-shrink: 0;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    /* 플로팅 장바구니 버튼 (원은 진한 주황, 아이콘만 밝게) */
+    .fab-cart {
+      position: fixed;
+      right: calc(50% - 210px + 16px); /* 가운데 정렬 + 살짝 오른쪽 */
+      bottom: 80px;
+      width: 56px;
+      height: 56px;
+      border-radius: 999px;
+      background-color: #ff7f3f; /* 진한 주황 */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+      cursor: pointer;
+    }
+
+    .fab-cart .cart-icon {
+      font-size: 26px;
+      color: #ffffff;
+      filter: brightness(1.4); /* 이모티콘만 더 환하게 */
+    }
+
+    @media (max-width: 440px) {
+      .fab-cart {
+        right: 16px;
+      }
+    }
+
+    /* 하단 탭바 */
+    .tabbar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      justify-content: center;
+      background-color: #ffffff;
+      box-shadow: 0 -2px 6px rgba(0,0,0,0.06);
+    }
+
+    .tabbar-inner {
+      width: 100%;
+      max-width: 420px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .tab-item {
+      padding: 8px 0 6px;
+      text-align: center;
+      font-size: 11px;
+      color: #999;
+    }
+
+    .tab-icon {
+      font-size: 18px;
+      margin-bottom: 2px;
+    }
+
+    .tab-item.active {
+      color: #ff7f3f;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- 헤더 -->
+    <header class="header">
+      <div class="header-left"></div>
+      <div class="header-title">마을 한끼</div>
+      <div class="header-right">
+        <span>🔔</span>
+      </div>
+    </header>
+
+    <!-- 검색바 -->
+    <div class="search-container">
+      <div class="search-bar">
+        <span>🔍</span>
+        <span>메뉴, 동네 가게를 검색해보세요</span>
+      </div>
+    </div>
+
+    <!-- 히어로 배너: 꽉 찬 사진 -->
+    <section class="hero">
+      <img src="" alt="마을 한끼 메인 배너"
+           style="width: 100%; height: 100%; object-fit: cover;">
+    </section>
+
+    <!-- 퀵 메뉴 -->
+    <nav class="quick-menu">
+      <div class="quick-item">
+        <div class="quick-icon">🍴</div>
+        <div>도시락 메뉴</div>
+      </div>
+      <div class="quick-item">
+        <div class="quick-icon">🍱</div>
+        <div>도시락 구독</div>
+      </div>
+      <div class="quick-item">
+        <div class="quick-icon">👍</div>
+        <div>도시락 추천</div>
+      </div>
+      <div class="quick-item">
+        <div class="quick-icon">🎉</div>
+        <div>제휴 할인 받기</div>
+      </div>
+    </nav>
+
+    <!-- 섹션 1 -->
+    <section class="section">
+      <h2 class="section-title">당신의 건강한 한끼를 응원합니다!</h2>
+      <p class="section-subtitle">건강 상태별 맞춤 식단 구독</p>
+      <div class="card-list">
+        <!-- 카드 1 -->
+        <article class="meal-card">
+          <div class="meal-image">
+            <!-- 추후 음식 사진 들어갈 자리 -->
+          </div>
+          <div class="meal-body">
+            <div class="meal-badge">혈당 관리</div>
+            <div class="meal-name">당뇨 맞춤 마을 한끼</div>
+            <div class="meal-desc">현미밥과 저당 반찬 구성</div>
+            <div class="meal-info">평균 657kcal · 나트륨 ↓</div>
+            <div class="meal-bottom">
+              <div class="meal-rating">
+                <span>⭐</span><span>4.8 (328)</span>
+              </div>
+            </div>
+          </div>
+        </article>
+        <!-- 카드 2 -->
+        <article class="meal-card">
+          <div class="meal-image">
+            <!-- 추후 음식 사진 들어갈 자리 -->
+          </div>
+          <div class="meal-body">
+            <div class="meal-badge">저염식</div>
+            <div class="meal-name">고혈압 저염 한끼</div>
+            <div class="meal-desc">국물·양념 최소화 건강식</div>
+            <div class="meal-info">평균 576kcal · 나트륨 ↓</div>
+            <div class="meal-bottom">
+              <div class="meal-rating">
+                <span>⭐</span><span>4.7 (189)</span>
+              </div>
+            </div>
+          </div>
+        </article>
+        <!-- 카드 3 -->
+        <article class="meal-card">
+          <div class="meal-image">
+            <!-- 추후 음식 사진 들어갈 자리 -->
+          </div>
+          <div class="meal-body">
+            <div class="meal-badge">다이어트</div>
+            <div class="meal-name">단백질 집중 한끼</div>
+            <div class="meal-desc">닭가슴살과 샐러드 구성</div>
+            <div class="meal-info">평균 498kcal · 단백질 ↑</div>
+            <div class="meal-bottom">
+              <div class="meal-rating">
+                <span>⭐</span><span>4.9 (524)</span>
+              </div>
+            </div>
+          </div>
+        </article>
+        <!-- ➕ 더보기 카드 -->
+        <div class="more-card">더보기 &gt;</div>
+      </div>
+    </section>
+
+    <!-- 섹션 2 -->
+    <section class="section">
+      <h2 class="section-title">특식도 이젠 한끼에서!</h2>
+      <p class="section-subtitle">우리 가족을 위한 동네 특선 건강식</p>
+      <div class="card-list">
+        <!-- 카드 1 -->
+        <article class="meal-card">
+          <div class="meal-image">
+            <!-- 추후 음식 사진 들어갈 자리 -->
+          </div>
+          <div class="meal-body">
+            <div class="meal-badge">주말 특식</div>
+            <div class="meal-name">우리 가족 모둠 한끼</div>
+            <div class="meal-desc">3~4인용 반찬 모둠 세트</div>
+            <div class="meal-info">주문마감 19:00</div>
+            <div class="meal-bottom">
+              <div class="meal-rating">
+                <span>⭐</span><span>4.6 (72)</span>
+              </div>
+            </div>
+          </div>
+        </article>
+        <!-- 카드 2 -->
+        <article class="meal-card">
+          <div class="meal-image">
+            <!-- 추후 음식 사진 들어갈 자리 -->
+          </div>
+          <div class="meal-body">
+            <div class="meal-badge">아이 입맛</div>
+            <div class="meal-name">아이 전용 한끼</div>
+            <div class="meal-desc">짜지 않고 부드러운 메뉴</div>
+            <div class="meal-info">2인분 · 오늘만 10%↓</div>
+            <div class="meal-bottom">
+              <div class="meal-rating">
+                <span>⭐</span><span>4.9 (103)</span>
+              </div>
+            </div>
+          </div>
+        </article>
+        <!-- 카드 3 -->
+        <article class="meal-card">
+          <div class="meal-image">
+            <!-- 추후 음식 사진 들어갈 자리 -->
+          </div>
+          <div class="meal-body">
+            <div class="meal-badge">어르신</div>
+            <div class="meal-name">부드러운 건강 한끼</div>
+            <div class="meal-desc">소화 잘 되는 부드러운 식단</div>
+            <div class="meal-info">나트륨·지방 ↓</div>
+            <div class="meal-bottom">
+              <div class="meal-rating">
+                <span>⭐</span><span>4.8 (57)</span>
+              </div>
+            </div>
+          </div>
+        </article>
+        <!-- ➕ 더보기 카드 -->
+        <div class="more-card">더보기 &gt;</div>
+      </div>
+    </section>
+  </div>
+
+  <!-- 플로팅 장바구니 버튼 -->
+  <div class="fab-cart">
+    <span class="cart-icon">🛒</span>
+  </div>
+
+  <!-- 하단 탭바 -->
+  <nav class="tabbar">
+    <div class="tabbar-inner">
+      <div class="tab-item active">
+        <div class="tab-icon">🏠</div>
+        <div>메인화면</div>
+      </div>
+      <div class="tab-item">
+        <div class="tab-icon">💬</div>
+        <div>커뮤니티</div>
+      </div>
+      <div class="tab-item">
+        <div class="tab-icon">❤️</div>
+        <div>찜 · 좋아요</div>
+      </div>
+      <div class="tab-item">
+        <div class="tab-icon">👤</div>
+        <div>마이페이지</div>
+      </div>
+    </div>
+  </nav>
+</body>
+</html>

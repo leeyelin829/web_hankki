@@ -1,26 +1,212 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>회원가입 | 마을한끼</title>
+  <meta charset="UTF-8">
+  <title>회원가입 | 마을한끼</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- 폰트 -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 420px;   /* 모바일 폭 */
+      min-height: 100vh;
+      background-color: #ffffff;
+      position: relative;
+      padding: 16px 20px 40px;
+    }
+
+    /* 상단 화면 이름 */
+    .screen-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-top: 4px;
+      margin-bottom: 4px;
+    }
+
+    .screen-subtitle {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 16px;
+    }
+
+    /* 로고/이미지 박스 */
+    .login-hero {
+      width: 100%;
+      height: 140px;
+      border-radius: 12px;
+      border: 1px solid #e0e0e0;
+      background-color: #f8f8f8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #bbbbbb;
+      font-size: 12px;
+      margin: 8px 0 24px;
+    }
+
+    /* 에러 영역 (form_errors.html 포함 부분) */
+    .form-errors {
+      margin-bottom: 12px;
+      font-size: 12px;
+    }
+
+    .form-errors div {
+      padding: 6px 8px;
+      border-radius: 6px;
+      background-color: #fff3f3;
+      border: 1px solid #ffb3b3;
+      color: #c53030;
+      margin-bottom: 4px;
+    }
+
+    .form-errors strong {
+      margin-right: 4px;
+    }
+
+    /* 입력 영역 */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .field-label {
+      font-size: 12px;
+      margin-bottom: 4px;
+      color: #555;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 11px 13px;
+      border-radius: 10px;
+      border: 1px solid #dddddd;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .input-field::placeholder {
+      color: #b3b3b3;
+    }
+
+    .input-field:focus {
+      border-color: #ff7f3f;
+      box-shadow: 0 0 0 2px rgba(255, 127, 63, 0.1);
+    }
+
+    /* 버튼은 화면 아래쪽에 깔리는 느낌으로 */
+    .login-bottom {
+      position: absolute;
+      left: 20px;
+      right: 20px;
+      bottom: 24px;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 12px 0;
+      border-radius: 10px;
+      border: none;
+      background-color: #ff7f3f;
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffffff;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .login-btn:hover {
+      background-color: #ff955f;
+    }
+
+    .helper-text {
+      font-size: 11px;
+      color: #999;
+      margin-top: 8px;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
+  <div class="app">
+    <!-- 상단 제목 -->
+    <div class="screen-title">회원가입</div>
+    <div class="screen-subtitle">마을 한끼를 이용할 계정을 만들어 주세요.</div>
+
+    <!-- 이미지/배너 영역 (나중에 로고나 그림 넣을 자리) -->
+    <div class="login-hero">
+      회원가입 배너 / 로고 이미지 영역
+    </div>
+
+    <!-- 실제 회원가입 폼 -->
     <form method="post">
-        {% csrf_token %}
+      {% csrf_token %}
+
+      <!-- 폼 에러 출력 (form_errors.html 포함) -->
+      <div class="form-errors">
         {% include 'form_errors.html' %}
+      </div>
+
+      <div class="form-group">
         <div>
-            <label>Username</label>
-            <input type="text" name="username" id="username">
+          <div class="field-label">아이디</div>
+          <input
+            type="text"
+            name="username"
+            id="username"
+            class="input-field"
+            placeholder="아이디를 입력해 주세요">
         </div>
+
         <div>
-            <label>Password</label>
-            <input type="text" name="password1" id="password1">
+          <div class="field-label">비밀번호</div>
+          <input
+            type="password"
+            name="password1"
+            id="password1"
+            class="input-field"
+            placeholder="비밀번호를 입력해 주세요">
         </div>
+
         <div>
-            <label>Password 확인</label>
-            <input type="text" name="password2" id="password2">
+          <div class="field-label">비밀번호 확인</div>
+          <input
+            type="password"
+            name="password2"
+            id="password2"
+            class="input-field"
+            placeholder="비밀번호를 한 번 더 입력해 주세요">
         </div>
-        <button type="submit">회원가입</button>
+      </div>
+
+      <div class="login-bottom">
+        <button type="submit" class="login-btn">
+          회원가입
+        </button>
+
+        <!-- 필요하면 나중에 로그인 링크 추가 -->
+        <!--
+        <div class="helper-text">
+          이미 계정이 있다면 <a href="{% url 'users:login' %}">로그인</a> 해 주세요.
+        </div>
+        -->
+      </div>
     </form>
+  </div>
 </body>
 </html>
