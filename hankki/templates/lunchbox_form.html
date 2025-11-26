@@ -1,0 +1,13 @@
+{% block content %}
+    <h2>새로운 도시락 상품 등록</h2>
+    <hr>
+    
+    <form method="post"> 
+        {% csrf_token %}
+        
+        {{ form.as_p }}
+        
+        <button type="submit" class="btn btn-primary">상품 등록</button>
+    </form>
+
+{% endblock content %}

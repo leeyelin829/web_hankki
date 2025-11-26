@@ -1,0 +1,13 @@
+{% block content %}
+    <h2>새로운 건강 카테고리 등록</h2>
+    <hr>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        {{ form.as_p }}
+        
+        <button type="submit" class="btn btn-success">카테고리 저장</button>
+    </form>
+
+{% endblock content %}

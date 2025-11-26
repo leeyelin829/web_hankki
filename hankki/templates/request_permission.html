@@ -1,0 +1,23 @@
+{% block content %}
+    <h2>도시락 판매자 등록</h2>
+    <hr>
+    <p>다음 약관에 동의해야 도시락 상품을 등록하고 관리할 수 있습니다.</p>
+
+    <h3>약관 및 책임</h3>
+    <div style="border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; max-height: 200px; overflow-y: scroll; font-size: 0.9em;">
+        본 약관에 동의함으로써 귀하는 상품 정보의 정확성, 식품 안전 기준 준수, 가격 책정의 정당성 등에 대한 법적 책임을 인정하며... (상세 약관 내용)
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {{ form.agreement.label_tag }}
+        {{ form.agreement }}
+        {{ form.agreement.errors }}
+
+        <button type="submit" class="btn btn-primary" style="margin-top: 15px;">
+            약관 동의 및 권한 획득
+        </button>
+    </form>
+
+{% endblock content %}
