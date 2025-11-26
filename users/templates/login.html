@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>로그인 | 마을한끼</title>
+</head>
+<body>
+    <form method="post" action="{% url 'users:login' %}">
+        {% csrf_token %}
+        {% include 'form_errors.html' %}
+        <div>
+            <label>Username</label>
+            <input type="text" name="username" id="username">
+        </div>
+        <div>
+            <label>Password</label>
+            <input type="text" name="password" id="password">
+        </div>
+        <button type="submit">Login</button>
+    </form>
+</body>
+</html>
