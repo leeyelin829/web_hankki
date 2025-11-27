@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>도시락 리스트</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f7f7f7; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
+        h1 { text-align: center; color: #333; margin-bottom: 25px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+        th { background-color: #f0f0f0; color: #555; font-weight: bold; }
+        .price-original { color: #555; }
+        .price-discount { color: #d9534f; font-weight: bold; font-size: 0.9em; }
+        .quantity-input { width: 50px; text-align: center; border: 1px solid #ccc; border-radius: 4px; padding: 5px; }
+        .add-cart-btn { background-color: #007bff; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; transition: background-color 0.3s; }
+        .add-cart-btn:hover { background-color: #0056b3; }
+        .out-of-stock { background-color: #ffe0e0; color: #a94442; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍱 오늘의 도시락 메뉴</h1>
+
+        {% csrf_token %}
+        <input type="hidden" name="cart_items_data" id="cart-items-data">
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 5%;">ID</th>
+                    <th style="width: 25%;">도시락 이름</th>
+                    <th style="width: 10%;">카테고리</th>
+                    <th style="width: 20%;">가격</th>
+                    <th style="width: 25%;">설명</th>
+                    <th style="width: 10%;">수량</th>
+                    <th style="width: 10%;">추가</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lunchbox in lunchboxes %}
+                <tr id="row-{{ lunchbox.id }}" {% if lunchbox.stock == 0 %}class="out-of-stock"{% endif %}>
+                    <td>{{ lunchbox.id }}</td>
+                    <td>
+                        <strong>{{ lunchbox.name }}</strong>
+                        {% if lunchbox.health_category.all %}
+                        <div style="font-size: 0.8em; color: #007bff;">
+                            ({% for hc in lunchbox.health_category.all %}{{ hc.name }}{% if not forloop.last %}, {% endif %}{% endfor %})
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td>{{ category_name|default:lunchbox.food_category }}</td>
+                    <td>
+                        {% if lunchbox.discount_price and lunchbox.discount_price < lunchbox.price %}
+                            <span class="price-original">{{ lunchbox.price }}원</span>
+                            <br>
+                            <span class="price-discount">{{ lunchbox.discount_price }}원 할인</span>
+                        {% else %}
+                            <span>{{ lunchbox.price }}원</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ lunchbox.description|truncatechars:50 }}</td>
+                    <td>
+                        {% if lunchbox.stock > 0 %}
+                            <span>{{ lunchbox.stock }}개</span>
+                        {% else %}
+                            <span style="color:red;">재고 없음</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if lunchbox.stock > 0 %}
+                            <a href="{% url 'hankki:cart' id=lunchbox.id %}" class="add-cart-link sold-out">장바구니 담기</a>
+                        {% else %}
+                            <div class="add-cart-link sold-out">품절</div>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7">현재 판매 중인 도시락이 없습니다.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

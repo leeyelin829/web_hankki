@@ -1,12 +1,24 @@
+import logging
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.contrib.auth.models import Group
+from django.db import transaction
 from django.urls import reverse_lazy
 
-from .models import HealthCategory, LunchboxModel
-from .forms import HealthCategoryForm, LunchboxForm, SupplierPermissionRequestForm
+from .apps import HankkiConfig
+from .models import HealthCategory, LunchboxModel, OrderStatus, OrderModel, OrderItemModel, CartItemModel
+from .forms import HealthCategoryForm, LunchboxForm, SupplierPermissionRequestForm, OrderForm, OrderItemFormSet
 
+
+logger = logging.getLogger(HankkiConfig.name)
+
+
+
+# ================
+#  HealthCategory
+# ================
 
 @user_passes_test(lambda user: user.is_authenticated and user.is_superuser, login_url='/auth/login/')
 def write_health_category(request, id=None):
@@ -30,11 +42,15 @@ def write_health_category(request, id=None):
 
 
 
+# ===========
+#  Lunchbox
+# ===========
+
 @login_required
 @permission_required('lunchbox_supplier', login_url=reverse_lazy('hankki:supplier'))
 def write_lunchbox(request, id=None):
     if id:
-        lunchbox = get_object_or_404(LunchboxModel, id=id)
+        lunchbox = get_object_or_404(LunchboxModel, pk=id)
         if lunchbox.supplier != request.user:
             return redirect('/')
     else:
@@ -58,6 +74,104 @@ def write_lunchbox(request, id=None):
     return render(request, 'lunchbox_form.html', context)
 
 
+def delete_lunchbox(request, id):
+    lunchbox = get_object_or_404(LunchboxModel, id=id)
+    lunchbox.delete()
+    return redirect('/')
+
+
+
+# ===========
+#  Order
+# ===========
+
+@login_required
+def order(request, id=None):
+    if id:
+        order = get_object_or_404(OrderModel, id=id)
+        if order.user != request.user:
+            return redirect('/')
+    else:
+        order = None
+
+    if request.method == 'POST':
+        form = OrderForm(request.POST, instance=order)
+
+        if form.is_valid():
+            if id:
+                queryset = order.orderitemmodel_set.all()
+            else:
+                queryset = CartItemModel.objects.filter(user=request.user)
+            if queryset.exists():
+                with transaction.atomic():
+
+                    order = form.save(commit=False)
+                    order.user = request.user
+                    order.status = OrderStatus.PENDING.value
+
+                    price_sum = 0;
+                    order_item_list = []
+                    for item in queryset:
+                        lunchbox = item.lunchbox
+                        quantity = item.quantity
+                        price_sum += (lunchbox.price - lunchbox.discount_price) * quantity
+
+                    order.price = price_sum
+                    order.save()
+
+                    for item in queryset:
+                        lunchbox = item.lunchbox
+                        quantity = item.quantity
+                        order_item = OrderItemModel(
+                            order=order,
+                            lunchbox=lunchbox,
+                            quantity=quantity,
+                            price=(lunchbox.price - lunchbox.discount_price) * quantity,
+                        )
+                        order_item.save()
+                        item.delete()
+
+                    return redirect('/')
+    else:
+        form = OrderForm(instance=order)
+
+    if id:
+        queryset = order.orderitemmodel_set.all()
+        # queryset = [item.lunchbox for item in queryset]
+        context = {'form': form, 'is_edit': True, 'queryset': queryset}
+    else:
+        queryset = CartItemModel.objects.filter(user=request.user).select_related('lunchbox')
+        # queryset = [item.lunchbox for item in queryset]
+        context = {'form': form, 'is_edit': False, 'queryset': queryset}
+    return render(request, 'order_form.html', context)
+
+
+
+# ===========
+#  Cart
+# ===========
+
+def lunchbox_list(request):
+    context = {'lunchboxes': LunchboxModel.objects.all()}
+    return render(request, 'lunchbox_list.html', context)
+
+
+@login_required
+def cart(request, id, quantity=1):
+    lunchbox = get_object_or_404(LunchboxModel, id=id)
+    cart = CartItemModel(
+        user=request.user,
+        lunchbox=lunchbox,
+        quantity=quantity,
+    )
+    cart.save()
+    return redirect('hankki:lunchbox_list')
+
+
+
+# ===========
+#  Supplier
+# ===========
 
 @login_required
 def supplier(request):
