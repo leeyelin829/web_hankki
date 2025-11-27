@@ -1,0 +1,132 @@
+{% extends 'webapp/base.html' %}
+{% load static %}
+
+{% block title %}마이페이지{% endblock %}
+
+{% block content %}
+<div class="mypage-container">
+    <!-- 프로필 카드 -->
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="profile-avatar-large">
+                {{ user.username|slice:":1"|upper }}
+            </div>
+            <div class="profile-info">
+                <h2 class="profile-username">{{ user.username }}</h2>
+                <p class="profile-email">{{ user.email|default:"이메일 미등록" }}</p>
+            </div>
+        </div>
+
+        <!-- 통계 카드 -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ total_posts }}</div>
+                <div class="stat-label">작성한 글</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ total_comments }}</div>
+                <div class="stat-label">댓글</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ total_likes }}</div>
+                <div class="stat-label">좋아요</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 내가 쓴 글 -->
+    <div class="mypage-section">
+        <div class="section-header">
+            <h3 class="section-title">내가 쓴 글</h3>
+            {% if total_posts > 5 %}
+            <a href="{% url 'post_list' %}" class="view-more">전체보기 →</a>
+            {% endif %}
+        </div>
+        <div class="mypage-list">
+            {% for post in my_posts %}
+            <a href="{% url 'post_detail' post.id %}" class="mypage-item">
+                <div class="item-content">
+                    <h4 class="item-title">{{ post.title }}</h4>
+                    <p class="item-text">{{ post.content|truncatechars:50 }}</p>
+                    <div class="item-meta">
+                        <span class="meta-badge">❤️ {{ post.likes.count }}</span>
+                        <span class="meta-badge">💬 {{ post.comments.count }}</span>
+                        <span class="meta-date">{{ post.created_at|date:"Y.m.d" }}</span>
+                    </div>
+                </div>
+                {% if post.thumbnail %}
+                <div class="item-thumbnail">
+                    <img src="{{ post.thumbnail.url }}" alt="thumbnail">
+                </div>
+                {% endif %}
+            </a>
+            {% empty %}
+            <div class="empty-box">
+                <div class="empty-icon">📝</div>
+                <p class="empty-text">아직 작성한 글이 없어요</p>
+                <a href="{% url 'post_create' %}" class="empty-button">첫 글 작성하기</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- 리뷰 관리 -->
+    <div class="mypage-section">
+        <div class="section-header">
+            <h3 class="section-title">리뷰 관리</h3>
+        </div>
+        <div class="mypage-list">
+            {% for comment in my_comments %}
+            <a href="{% url 'post_detail' comment.post.id %}" class="mypage-item">
+                <div class="item-content">
+                    <div class="item-badge">댓글</div>
+                    <h4 class="item-title">{{ comment.post.title }}</h4>
+                    <p class="item-text">{{ comment.content|truncatechars:50 }}</p>
+                    <div class="item-meta">
+                        <span class="meta-date">{{ comment.created_at|date:"Y.m.d" }}</span>
+                    </div>
+                </div>
+            </a>
+            {% empty %}
+            <div class="empty-box">
+                <div class="empty-icon">💬</div>
+                <p class="empty-text">아직 작성한 댓글이 없어요</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- 구독 관리 (좋아요한 글) -->
+    <div class="mypage-section">
+        <div class="section-header">
+            <h3 class="section-title">좋아요한 글</h3>
+        </div>
+        <div class="mypage-list">
+            {% for post in liked_posts %}
+            <a href="{% url 'post_detail' post.id %}" class="mypage-item">
+                <div class="item-content">
+                    <div class="item-badge liked">❤️ 좋아요</div>
+                    <h4 class="item-title">{{ post.title }}</h4>
+                    <p class="item-text">{{ post.content|truncatechars:50 }}</p>
+                    <div class="item-meta">
+                        <span class="meta-badge">❤️ {{ post.likes.count }}</span>
+                        <span class="meta-badge">💬 {{ post.comments.count }}</span>
+                        <span class="meta-date">{{ post.created_at|date:"Y.m.d" }}</span>
+                    </div>
+                </div>
+                {% if post.thumbnail %}
+                <div class="item-thumbnail">
+                    <img src="{{ post.thumbnail.url }}" alt="thumbnail">
+                </div>
+                {% endif %}
+            </a>
+            {% empty %}
+            <div class="empty-box">
+                <div class="empty-icon">❤️</div>
+                <p class="empty-text">아직 좋아요한 글이 없어요</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

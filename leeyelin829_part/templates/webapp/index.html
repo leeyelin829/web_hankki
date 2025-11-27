@@ -1,0 +1,29 @@
+<!-- templates/webapp/index.html -->
+{% extends "webapp/header.html" %}
+
+{% block content %}
+  <h1>게시판 인기글</h1>
+  <div class="post-list">
+    {% for post in posts %}
+      <div class="post-item">
+        <div class="post-thumbnail">
+          {% if post.thumbnail %}
+            <img src="{{ post.thumbnail.url }}" alt="Thumbnail">
+          {% else %}
+            <div class="no-thumbnail">No Image</div>
+          {% endif %}
+        </div>
+        <div class="post-details">
+          <h3>{{ post.title }}</h3>
+          <p>{{ post.content|slice:":50" }}...</p>
+          <p>작성자: {{ post.author.username }}</p>
+          <p>좋아요: {{ post.likes }} | 조회수: {{ post.views }}</p>
+          <a href="{% url 'post_detail' post.id %}">상세보기</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- 글쓰기 버튼 -->
+  <button id="post-button" onclick="window.location.href='{% url 'post_create' %}'">+</button>
+{% endblock %}

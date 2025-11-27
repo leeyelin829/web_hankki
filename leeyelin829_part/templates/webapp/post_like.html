@@ -1,0 +1,12 @@
+<!-- templates/webapp/post_list.html -->
+{% for post in posts %}
+  <div class="post-thumbnail">
+    <h2><a href="{% url 'post_detail' post.id %}">{{ post.title }}</a></h2>
+    <p>{{ post.preview_content }}</p>
+    {% if post.thumbnail %}
+      <img src="{{ post.thumbnail.url }}" alt="thumbnail" class="thumbnail-image">
+    {% endif %}
+    <p>좋아요: {{ post.likes.count }} | 댓글: {{ post.comments.count }}</p>
+    <a href="{% url 'post_like' post.id %}">좋아요</a>  <!-- 좋아요 버튼 -->
+  </div>
+{% endfor %}

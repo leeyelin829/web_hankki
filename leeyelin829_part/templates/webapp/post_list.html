@@ -1,0 +1,149 @@
+{% extends 'webapp/base.html' %}
+{% load static %}
+
+{% block title %}커뮤니티 - 게시글 목록{% endblock %}
+
+{% block content %}
+<div class="community-container">
+    <!-- 인기글 섹션 -->
+    <section class="popular-section">
+        <h2 class="section-title">인기글</h2>
+        <div class="popular-grid" id="popularGrid">
+            {% for post in popular_posts %}
+            <a href="{% url 'post_detail' post.id %}" class="popular-card" data-page="{{ forloop.counter0|divisibleby:2|yesno:'1,2' }}{% if forloop.counter0|divisibleby:2 %}{% else %}{% if forloop.counter0 == 1 or forloop.counter0 == 3 or forloop.counter0 == 5 %}{{ forloop.counter0|add:2|divisibleby:2|yesno:'2,3' }}{% endif %}{% endif %}">
+                <div class="popular-header">
+                    <div class="author-info">
+                        <div class="avatar-small">
+                            {{ post.author.username|slice:":1"|upper }}
+                        </div>
+                        <span class="author-name">@{{ post.author.username }}</span>
+                    </div>
+                </div>
+                <div class="popular-content">
+                    <h3>{{ post.title }}</h3>
+                    <p>{{ post.content|truncatechars:50 }}</p>
+                </div>
+                <div class="popular-stats">
+                    <span>❤️ {{ post.likes.count }}</span>
+                    <span>💬 {{ post.comments.count }}</span>
+                    <span>👁️ {{ post.views }}</span>
+                </div>
+            </a>
+            {% empty %}
+            <p class="no-posts" style="grid-column: 1 / -1;">아직 게시글이 없습니다.</p>
+            {% endfor %}
+        </div>
+
+        <!-- 페이지네이션 점 -->
+        {% if popular_posts|length > 0 %}
+        <div class="pagination-dots">
+            <span class="dot active" data-page="1" onclick="showPopularPage(1)"></span>
+            {% if popular_posts|length > 2 %}
+            <span class="dot" data-page="2" onclick="showPopularPage(2)"></span>
+            {% endif %}
+            {% if popular_posts|length > 4 %}
+            <span class="dot" data-page="3" onclick="showPopularPage(3)"></span>
+            {% endif %}
+        </div>
+        {% endif %}
+    </section>
+
+    <!-- 게시판 둘러보기 -->
+    <section class="post-list-section">
+        <div class="list-header">
+            <h2 class="section-title">게시판 둘러보기</h2>
+            <div class="list-controls">
+                <div class="sort-dropdown">
+                    <a href="?sort=recent" style="cursor: pointer; text-decoration: none; color: {% if current_sort == 'recent' or not current_sort %}#FF5F20{% else %}#999{% endif %};">
+                        시간순
+                    </a>
+                    <span style="color: #ccc; margin: 0 4px;">|</span>
+                    <a href="?sort=popular" style="cursor: pointer; text-decoration: none; color: {% if current_sort == 'popular' %}#FF5F20{% else %}#999{% endif %};">
+                        인기순
+                    </a>
+                </div>
+                {% if user.is_authenticated %}
+                <a href="{% url 'post_create' %}" class="btn-write">글쓰기</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="post-list">
+            {% for post in posts %}
+            <a href="{% url 'post_detail' post.id %}" class="post-item">
+                <div class="post-avatar">
+                    {{ post.author.username|slice:":1"|upper }}
+                </div>
+                <div class="post-main">
+                    <div class="post-content">
+                        <div class="post-author">{{ post.author.username }}</div>
+                        <div class="post-title">{{ post.title }}</div>
+                        <div class="post-preview">{{ post.content|truncatechars:30 }}</div>
+                    </div>
+                    <div class="post-stats">
+                        <span class="stat-item">
+                            <span class="stat-icon">❤️</span>
+                            <span class="stat-number">{{ post.likes.count }}</span>
+                        </span>
+                        <span class="stat-item">
+                            <span class="stat-icon">💬</span>
+                            <span class="stat-number">{{ post.comments.count }}</span>
+                        </span>
+                        <span class="stat-item">
+                            <span class="stat-icon">👁️</span>
+                            <span class="stat-number">{{ post.views }}</span>
+                        </span>
+                    </div>
+                </div>
+                {% if post.thumbnail %}
+                <div class="post-thumbnail-small">
+                    <img src="{{ post.thumbnail.url }}" alt="thumbnail">
+                </div>
+                {% endif %}
+            </a>
+            {% empty %}
+            <p class="no-posts">아직 게시글이 없습니다.</p>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+
+{% if user.is_authenticated %}
+<a href="{% url 'post_create' %}" class="floating-button" title="글 작성">+</a>
+{% endif %}
+
+<script>
+// 인기글 페이지네이션
+let currentPage = 1;
+
+function showPopularPage(page) {
+    currentPage = page;
+    const cards = document.querySelectorAll('.popular-card');
+    const dots = document.querySelectorAll('.pagination-dots .dot');
+
+    // 모든 카드 숨기기
+    cards.forEach(card => {
+        card.style.display = 'none';
+    });
+
+    // 현재 페이지의 카드만 보이기 (페이지당 2개)
+    const startIndex = (page - 1) * 2;
+    const endIndex = startIndex + 2;
+
+    for (let i = startIndex; i < endIndex && i < cards.length; i++) {
+        cards[i].style.display = 'block';
+    }
+
+    // 점 활성화 상태 변경
+    dots.forEach(dot => {
+        dot.classList.remove('active');
+    });
+    dots[page - 1].classList.add('active');
+}
+
+// 페이지 로드 시 첫 번째 페이지 표시
+document.addEventListener('DOMContentLoaded', function() {
+    showPopularPage(1);
+});
+</script>
+{% endblock %}

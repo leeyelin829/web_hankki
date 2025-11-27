@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Django 웹사이트 예시">
+  <meta name="author" content="Your Name">
+  <title>{% block title %}웹사이트 제목{% endblock %}</title>
+
+  <!-- static 태그 로드 -->
+  {% load static %}
+
+  <!-- CSS 파일을 static 태그로 불러오기 -->
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+  <!-- favicon 아이콘 설정 -->
+  <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+<body>
+  <header>
+    <div class="logo">
+      <h1><a href="{% url 'index' %}">웹사이트 이름</a></h1>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="{% url 'index' %}">홈</a></li>
+        <li><a href="{% url 'service' %}">서비스</a></li>
+        <li><a href="#">연락처</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- 본문 내용이 들어가는 부분 -->
+  <div class="content">
+    {% block content %}
+    {% endblock %}
+  </div>
+</body>
+</html>

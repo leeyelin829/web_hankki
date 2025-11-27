@@ -1,0 +1,18 @@
+{% extends 'webapp/base.html' %}
+
+{% block title %}글 작성 - 커뮤니티{% endblock %}
+
+{% block content %}
+<div class="post-create-container">
+    <h1>새 게시글 작성</h1>
+    
+    <form method="post" enctype="multipart/form-data" class="post-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="form-buttons">
+            <button type="submit" class="btn btn-primary">작성하기</button>
+            <a href="{% url 'post_list' %}" class="btn btn-secondary">취소</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
