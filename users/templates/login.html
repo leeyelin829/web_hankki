@@ -43,27 +43,13 @@
       margin-bottom: 16px;
     }
 
-    /* 로고/이미지 박스 */
-    .login-hero {
-      width: 100%;
-      height: 140px;
-      border-radius: 12px;
-      border: 1px solid #e0e0e0;
-      background-color: #f8f8f8;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #bbbbbb;
-      font-size: 12px;
-      margin: 8px 0 28px;
-    }
-
     /* 입력 영역 */
     .form-group {
       display: flex;
       flex-direction: column;
       gap: 12px;
       margin-bottom: 32px;
+      margin-top: 8px;  /* 배너 없어져서 살짝 위 여백 추가 */
     }
 
     .field-label {
@@ -121,6 +107,16 @@
       margin-top: 8px;
       text-align: center;
     }
+
+    .helper-text a {
+      color: #ff7f3f;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .helper-text a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -128,11 +124,6 @@
     <!-- 상단 제목 -->
     <div class="screen-title">로그인</div>
     <div class="screen-subtitle">마을 한끼를 이용하려면 먼저 로그인해 주세요.</div>
-
-    <!-- 이미지/배너 영역 (나중에 로고나 그림 넣을 자리) -->
-    <div class="login-hero">
-      로그인 배너 / 로고 이미지 영역
-    </div>
 
     <!-- 실제 로그인 폼 -->
     <form method="post" action="{% url 'users:login' %}">
@@ -165,12 +156,11 @@
           로그인
         </button>
 
-        <!-- 회원가입 안내 쓰고 싶으면 나중에 여기에 -->
-        <!--
+        <!-- ✅ 회원가입으로 이동하는 링크 -->
         <div class="helper-text">
-          아직 계정이 없다면 <a href="{% url 'users:register' %}">회원가입</a>을 해주세요.
+          아직 계정이 없으신가요?
+          <a href="{% url 'users:register' %}">회원가입 하러 가기</a>
         </div>
-        -->
       </div>
     </form>
   </div>

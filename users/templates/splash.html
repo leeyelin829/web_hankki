@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -6,7 +7,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       font-family: 'Noto Sans KR', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
@@ -15,6 +20,7 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
+      color: #ffffff;
     }
 
     .app {
@@ -26,42 +32,77 @@
       align-items: center;
       background-color: transparent;
       flex-direction: column;
-      color: #ffffff;
     }
 
     .logo-box {
-      width: 96px;
-      height: 96px;
-      border-radius: 24px;
-      border: 2px solid rgba(255,255,255,0.7);
-      background-color: rgba(255,255,255,0.15);
+      width: 120px;
+      height: 120px;
+      border-radius: 28px;
+      overflow: hidden; /* 로고를 박스 안에 꽉 채우기 위해 */
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 14px;
-      text-align: center;
+    }
+
+    .logo-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover; /* 로고 비율 유지 + 꽉 차게 */
+      display: block;
     }
 
     .app-name {
       margin-top: 16px;
       font-size: 20px;
       font-weight: 700;
+      text-align: center;
     }
 
     .subtitle {
       margin-top: 4px;
       font-size: 12px;
-      opacity: 0.85;
+      opacity: 0.9;
+      text-align: center;
+    }
+
+    .welcome-text {
+      margin-top: 16px;
+      font-size: 14px;
+      font-weight: 500;
+      text-align: center;
     }
   </style>
 </head>
 <body>
   <div class="app">
     <div class="logo-box">
-      로고 영역
+      <!-- ⚠ static 경로는 네가 static 파일 둔 위치에 맞게 조정 가능 -->
+      <img src="{% static 'img/마을한끼로고.png' %}"
+           alt="마을 한끼 로고"
+           class="logo-img">
     </div>
     <div class="app-name">마을 한끼</div>
     <div class="subtitle">동네와 함께 만드는 따뜻한 식사</div>
+    <div id="welcome-text" class="welcome-text"></div>
   </div>
+
+  <script>
+    const messages = [
+      "오늘은 뭘 드실 건가요?",
+      "따뜻한 한 끼 준비해볼까요?",
+      "우리 동네 맛있는 도시락 골라볼까요?",
+      "지금 배고프지 않아요…? 😋",
+      "오늘도 수고했어요, 맛있는 거 먹자요."
+    ];
+
+    const randomIndex = Math.floor(Math.random() * messages.length);
+    const randomMessage = messages[randomIndex];
+    document.getElementById("welcome-text").textContent = randomMessage;
+
+    // ✅ 1.5초 뒤 온보딩으로 이동
+    setTimeout(function () {
+      window.location.href = "/onboarding/";
+    }, 1500);
+  </script>
 </body>
 </html>

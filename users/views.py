@@ -3,6 +3,14 @@ from django.contrib.auth import login
 
 from django.contrib.auth.forms import UserCreationForm
 
+# ✅ 스플래시 화면
+def splash(request):
+    return render(request, 'splash.html')
+
+
+# ✅ 온보딩 화면
+def onboarding(request):
+    return render(request, 'onboarding.html')
 
 def register(request):
     if request.method == 'POST':

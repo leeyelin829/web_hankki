@@ -15,8 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from users import views as user_views  # ✅ 추가: users 쪽 뷰 가져오기
 
 urlpatterns = [
+    # ✅ 스플래시 & 온보딩 테스트용 URL
+    path("splash/", user_views.splash, name="splash"),
+    path("onboarding/", user_views.onboarding, name="onboarding"),
+
     path('', include('hankki.urls')),
     path('auth/', include('users.urls')),
     path('admin/', admin.site.urls),

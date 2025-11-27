@@ -57,6 +57,7 @@
       color: #555;
       line-height: 1.7;
       margin-bottom: 32px;
+      padding-left: 18px; /* ✅ 왼쪽 여백 조금 추가 */
     }
 
     .bullet-list li {
@@ -98,8 +99,8 @@
       <li>가족, 아이, 어르신을 위한 한 끼 추천</li>
     </ul>
 
-    <!-- 다음 단계로 넘어가는 버튼 (예: 로그인 화면) -->
-    <button class="bottom-btn" onclick="location.href='{% url 'users:login' %}'">
+    <!-- ✅ 시작하기 누르면 메인(/)으로 이동 -->
+    <button class="bottom-btn" onclick="location.href='/'">
       시작하기
     </button>
   </div>

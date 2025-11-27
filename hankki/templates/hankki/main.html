@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -68,6 +69,19 @@
       padding: 8px 12px;
       font-size: 13px;
       color: #888;
+    }
+
+    .search-input {
+      border: none;
+      background: transparent;
+      font-size: 13px;
+      flex: 1;
+      outline: none;
+      color: #555;
+    }
+
+    .search-input::placeholder {
+      color: #aaaaaa;
     }
 
     /* 히어로 / 대표 배너 → 꽉 찬 사진 자리 */
@@ -151,18 +165,17 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.06);
       overflow: hidden;
       flex-shrink: 0;
+      cursor: pointer;  /* 카드도 클릭 가능 느낌 */
     }
 
-    /* 📸 사진 들어갈 자리 */
+    /* 📸 도시락1.jpeg 로 카드 이미지 전체 채우기 */
     .meal-image {
       height: 90px;
-      background-color: #eeeeee;
       border-bottom: 1px solid #e0e0e0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #bbbbbb;
-      font-size: 12px;
+      background-image: url("{% static 'img/도시락1.jpeg' %}");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
     }
 
     .meal-body {
@@ -228,15 +241,15 @@
       white-space: nowrap;
     }
 
-    /* 플로팅 장바구니 버튼 (원은 진한 주황, 아이콘만 밝게) */
+    /* 플로팅 장바구니 버튼 */
     .fab-cart {
       position: fixed;
-      right: calc(50% - 210px + 16px); /* 가운데 정렬 + 살짝 오른쪽 */
+      right: calc(50% - 210px + 16px);
       bottom: 80px;
       width: 56px;
       height: 56px;
       border-radius: 999px;
-      background-color: #ff7f3f; /* 진한 주황 */
+      background-color: #ff7f3f;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -247,7 +260,7 @@
     .fab-cart .cart-icon {
       font-size: 26px;
       color: #ffffff;
-      filter: brightness(1.4); /* 이모티콘만 더 환하게 */
+      filter: brightness(1.4);
     }
 
     @media (max-width: 440px) {
@@ -280,6 +293,7 @@
       text-align: center;
       font-size: 11px;
       color: #999;
+      cursor: pointer;
     }
 
     .tab-icon {
@@ -306,33 +320,38 @@
 
     <!-- 검색바 -->
     <div class="search-container">
-      <div class="search-bar">
+      <!-- 🔍 검색 상호작용: /search/?q=... 로 GET 요청 -->
+      <form class="search-bar" method="get" action="/search/">
         <span>🔍</span>
-        <span>메뉴, 동네 가게를 검색해보세요</span>
-      </div>
+        <input
+          type="text"
+          name="q"
+          class="search-input"
+          placeholder="메뉴, 동네 가게를 검색해보세요" />
+      </form>
     </div>
 
-    <!-- 히어로 배너: 꽉 찬 사진 -->
+    <!-- 히어로 배너 -->
     <section class="hero">
-      <img src="" alt="마을 한끼 메인 배너"
+      <img src="{% static 'img/메인보드.png' %}" alt="마을 한끼 메인 배너"
            style="width: 100%; height: 100%; object-fit: cover;">
     </section>
 
     <!-- 퀵 메뉴 -->
     <nav class="quick-menu">
-      <div class="quick-item">
+      <div class="quick-item" onclick="location.href='/menu/';">
         <div class="quick-icon">🍴</div>
         <div>도시락 메뉴</div>
       </div>
-      <div class="quick-item">
+      <div class="quick-item" onclick="location.href='/subscribe/';">
         <div class="quick-icon">🍱</div>
         <div>도시락 구독</div>
       </div>
-      <div class="quick-item">
+      <div class="quick-item" onclick="location.href='/recommend/';">
         <div class="quick-icon">👍</div>
         <div>도시락 추천</div>
       </div>
-      <div class="quick-item">
+      <div class="quick-item" onclick="location.href='/discount/';">
         <div class="quick-icon">🎉</div>
         <div>제휴 할인 받기</div>
       </div>
@@ -343,11 +362,8 @@
       <h2 class="section-title">당신의 건강한 한끼를 응원합니다!</h2>
       <p class="section-subtitle">건강 상태별 맞춤 식단 구독</p>
       <div class="card-list">
-        <!-- 카드 1 -->
-        <article class="meal-card">
-          <div class="meal-image">
-            <!-- 추후 음식 사진 들어갈 자리 -->
-          </div>
+        <article class="meal-card" onclick="location.href='/menu/diabetes/';">
+          <div class="meal-image"></div>
           <div class="meal-body">
             <div class="meal-badge">혈당 관리</div>
             <div class="meal-name">당뇨 맞춤 마을 한끼</div>
@@ -360,11 +376,9 @@
             </div>
           </div>
         </article>
-        <!-- 카드 2 -->
-        <article class="meal-card">
-          <div class="meal-image">
-            <!-- 추후 음식 사진 들어갈 자리 -->
-          </div>
+
+        <article class="meal-card" onclick="location.href='/menu/low-salt/';">
+          <div class="meal-image"></div>
           <div class="meal-body">
             <div class="meal-badge">저염식</div>
             <div class="meal-name">고혈압 저염 한끼</div>
@@ -377,11 +391,9 @@
             </div>
           </div>
         </article>
-        <!-- 카드 3 -->
-        <article class="meal-card">
-          <div class="meal-image">
-            <!-- 추후 음식 사진 들어갈 자리 -->
-          </div>
+
+        <article class="meal-card" onclick="location.href='/menu/protein/';">
+          <div class="meal-image"></div>
           <div class="meal-body">
             <div class="meal-badge">다이어트</div>
             <div class="meal-name">단백질 집중 한끼</div>
@@ -394,8 +406,8 @@
             </div>
           </div>
         </article>
-        <!-- ➕ 더보기 카드 -->
-        <div class="more-card">더보기 &gt;</div>
+
+        <div class="more-card" onclick="location.href='/menu/';">더보기 &gt;</div>
       </div>
     </section>
 
@@ -404,11 +416,8 @@
       <h2 class="section-title">특식도 이젠 한끼에서!</h2>
       <p class="section-subtitle">우리 가족을 위한 동네 특선 건강식</p>
       <div class="card-list">
-        <!-- 카드 1 -->
-        <article class="meal-card">
-          <div class="meal-image">
-            <!-- 추후 음식 사진 들어갈 자리 -->
-          </div>
+        <article class="meal-card" onclick="location.href='/menu/family-set/';">
+          <div class="meal-image"></div>
           <div class="meal-body">
             <div class="meal-badge">주말 특식</div>
             <div class="meal-name">우리 가족 모둠 한끼</div>
@@ -421,11 +430,9 @@
             </div>
           </div>
         </article>
-        <!-- 카드 2 -->
-        <article class="meal-card">
-          <div class="meal-image">
-            <!-- 추후 음식 사진 들어갈 자리 -->
-          </div>
+
+        <article class="meal-card" onclick="location.href='/menu/kids/';">
+          <div class="meal-image"></div>
           <div class="meal-body">
             <div class="meal-badge">아이 입맛</div>
             <div class="meal-name">아이 전용 한끼</div>
@@ -438,11 +445,9 @@
             </div>
           </div>
         </article>
-        <!-- 카드 3 -->
-        <article class="meal-card">
-          <div class="meal-image">
-            <!-- 추후 음식 사진 들어갈 자리 -->
-          </div>
+
+        <article class="meal-card" onclick="location.href='/menu/senior/';">
+          <div class="meal-image"></div>
           <div class="meal-body">
             <div class="meal-badge">어르신</div>
             <div class="meal-name">부드러운 건강 한끼</div>
@@ -455,33 +460,33 @@
             </div>
           </div>
         </article>
-        <!-- ➕ 더보기 카드 -->
-        <div class="more-card">더보기 &gt;</div>
+
+        <div class="more-card" onclick="location.href='/menu/';">더보기 &gt;</div>
       </div>
     </section>
   </div>
 
   <!-- 플로팅 장바구니 버튼 -->
-  <div class="fab-cart">
+  <div class="fab-cart" onclick="location.href='/cart/';">
     <span class="cart-icon">🛒</span>
   </div>
 
   <!-- 하단 탭바 -->
   <nav class="tabbar">
     <div class="tabbar-inner">
-      <div class="tab-item active">
+      <div class="tab-item active" onclick="location.href='/main/';">
         <div class="tab-icon">🏠</div>
         <div>메인화면</div>
       </div>
-      <div class="tab-item">
+      <div class="tab-item" onclick="location.href='/community/';">
         <div class="tab-icon">💬</div>
         <div>커뮤니티</div>
       </div>
-      <div class="tab-item">
+      <div class="tab-item" onclick="location.href='/favorite/';">
         <div class="tab-icon">❤️</div>
-        <div>찜 · 좋아요</div>
+        <div>찜</div>
       </div>
-      <div class="tab-item">
+      <div class="tab-item" onclick="location.href='/mypage/';">
         <div class="tab-icon">👤</div>
         <div>마이페이지</div>
       </div>

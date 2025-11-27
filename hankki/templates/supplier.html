@@ -1,7 +1,267 @@
-{% block content %}
-    <h2>도시락 판매자 페이지</h2>
-    <hr>
-    
-    {{ user.username }}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>판매자 페이지 | 마을한끼</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-{% endblock content %}
+        body {
+            font-family: 'Noto Sans KR', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 420px;
+            min-height: 100vh;
+            background-color: #ffffff;
+            position: relative;
+            padding: 16px 20px 100px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .back-btn {
+            font-size: 20px;
+            text-decoration: none;
+            color: #333;
+            margin-right: 12px;
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .user-info {
+            background-color: #fff3e8;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .user-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ff7f3f;
+        }
+
+        .user-badge {
+            display: inline-block;
+            font-size: 11px;
+            padding: 3px 8px;
+            background-color: #ff7f3f;
+            color: white;
+            border-radius: 10px;
+            margin-left: 8px;
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .product-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .product-card {
+            display: flex;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .product-image {
+            width: 90px;
+            height: 90px;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #bbb;
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+
+        .product-info {
+            flex: 1;
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .product-meta {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .product-price {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ff7f3f;
+        }
+
+        .product-stock {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .edit-btn {
+            font-size: 11px;
+            padding: 4px 10px;
+            border: 1px solid #ff7f3f;
+            background: white;
+            color: #ff7f3f;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #888;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .fab-add {
+            position: fixed;
+            right: calc(50% - 210px + 16px);
+            bottom: 24px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: #ff7f3f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(255, 127, 63, 0.4);
+            text-decoration: none;
+            color: white;
+            font-size: 28px;
+            font-weight: 300;
+        }
+
+        @media (max-width: 440px) {
+            .fab-add {
+                right: 20px;
+            }
+        }
+
+        .messages {
+            margin-bottom: 16px;
+        }
+
+        .messages .success {
+            padding: 10px 14px;
+            background-color: #e6ffed;
+            border: 1px solid #9ae6b4;
+            border-radius: 8px;
+            color: #276749;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <div class="header">
+            <div class="header-left">
+                <a href="{% url 'hankki:main' %}" class="back-btn">←</a>
+                <h1 class="page-title">판매자 페이지</h1>
+            </div>
+        </div>
+
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="user-info">
+            <span class="user-name">{{ user.username }}</span>
+            <span class="user-badge">판매자</span>
+        </div>
+
+        <h2 class="section-title">내 도시락 상품</h2>
+
+        {% if lunchboxes %}
+        <div class="product-list">
+            {% for lunchbox in lunchboxes %}
+            <div class="product-card">
+                <div class="product-image">사진</div>
+                <div class="product-info">
+                    <div>
+                        <div class="product-name">{{ lunchbox.name }}</div>
+                        <div class="product-meta">{{ lunchbox.get_food_category_display|default:'미분류' }}</div>
+                    </div>
+                    <div>
+                        <div class="product-price">
+                            {% if lunchbox.discount_price %}
+                            {{ lunchbox.discount_price|floatformat:0 }}원
+                            <small style="text-decoration: line-through; color: #aaa;">{{ lunchbox.price|floatformat:0 }}원</small>
+                            {% else %}
+                            {{ lunchbox.price|floatformat:0 }}원
+                            {% endif %}
+                        </div>
+                        <div class="product-stock">재고: {{ lunchbox.stock }}개</div>
+                    </div>
+                    <div class="product-actions">
+                        <a href="{% url 'hankki:write_lunchbox_edit' lunchbox.id %}" class="edit-btn">수정</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">🍱</div>
+            <p>등록된 도시락이 없습니다.</p>
+            <p style="font-size: 13px; margin-top: 8px;">아래 + 버튼을 눌러 첫 상품을 등록해보세요!</p>
+        </div>
+        {% endif %}
+
+        <a href="{% url 'hankki:write_lunchbox' %}" class="fab-add">+</a>
+    </div>
+</body>
+</html>
