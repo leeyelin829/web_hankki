@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>주문 및 주문 항목 등록</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+        h1 { text-align: center; color: #333; }
+        label { display: block; margin-top: 10px; font-weight: bold; }
+        input[type="text"], input[type="number"], textarea, select, input[type="datetime-local"] { width: 100%; padding: 8px; margin-top: 5px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .form-row { margin-bottom: 15px; }
+        .order-item { border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; background-color: #fafafa; border-radius: 4px; }
+        .order-item h4 { margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .delete-row { float: right; color: red; cursor: pointer; border: none; background: none; font-size: 16px; }
+        .add-row { background-color: #5cb85c; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px; }
+        .submit-btn { background-color: #007bff; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-size: 1.1em; margin-top: 20px; }
+        .errorlist { color: red; list-style-type: none; padding: 0; margin: 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍽️ 도시락 주문하기</h1>
+
+        {% if form.errors or formset.errors %}
+            <div style="color: red; padding: 10px; border: 1px solid red;">
+                <h4>유효성 검사 오류 발생!</h4>
+                <p>입력 내용을 확인해주세요.</p>
+                {% if form.errors %}
+                    <h5>주문 정보 오류:</h5>
+                    {{ form.errors }}
+                {% endif %}
+                {% if formset.errors %}
+                    <h5>주문 항목 오류:</h5>
+                    {% endif %}
+            </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            <h2>1. 주문자 정보 및 옵션</h2>
+
+            <div class="form-row">
+                {{ form.pickup_date_time.label_tag }}
+                {{ form.pickup_date_time }}
+                {% if form.pickup_date_time.errors %}
+                    <ul class="errorlist">
+                        {% for error in form.pickup_date_time.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div class="form-row">
+                <label>
+                    {{ form.is_delivery }} 배달로 주문합니다.
+                </label>
+            </div>
+
+            <div class="form-row">
+                {{ form.delivery_address.label_tag }}
+                {{ form.delivery_address }}
+                {% if form.delivery_address.errors %}
+                    <ul class="errorlist">
+                        {% for error in form.delivery_address.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            {% if is_edit %}
+                <h2>🛒 주문한 도시락 목록</h2>
+            {% else %}
+                <h2>🛒 장바구니 목록</h2>
+            {% endif %}
+                <table style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
+                    <thead>
+                      <tr style="background-color: #eee;">
+                        <th style="border: 1px solid #ccc; padding: 8px;">이름</th>
+                        <th style="border: 1px solid #ccc; padding: 8px;">가격</th>
+                        <th style="border: 1px solid #ccc; padding: 8px;">할인 가격</th>
+                        <th style="border: 1px solid #ccc; padding: 8px;">카테고리</th>
+                        <th style="border: 1px solid #ccc; padding: 8px;">수량</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {% for item in queryset %}
+                      <tr>
+                          <td style="border: 1px solid #ccc; padding: 8px;">
+                              <strong>{{ item.lunchbox.name }}</strong>
+                          </td>
+                          <td style="border: 1px solid #ccc; padding: 8px;">{{ item.lunchbox.price|default:"-" }}원</td>
+                          <td style="border: 1px solid #ccc; padding: 8px; color: red;">
+                              {{ item.lunchbox.discount_price|default:"-" }}원
+                          </td>
+                          <td style="border: 1px solid #ccc; padding: 8px;">{{ item.lunchbox.food_category }}</td>
+                          <td style="border: 1px solid #ccc; padding: 8px;">{{ item.quantity }}개</td>
+                      </tr>
+                      {% empty %}
+                      <tr>
+                          <td colspan="6" style="text-align: center; padding: 10px;">현재 장바구니에 도시락이 없습니다.</td>
+                      </tr>
+                      {% endfor %}
+                  </tbody>
+              </table>
+
+            <button type="submit" class="submit-btn">
+                {% if is_edit %}
+                    주문 수정
+                {% else %}
+                    주문 완료 및 결제
+                {% endif %}
+            </button>
+        </form>
+    </div>
+</body>
+</html>
