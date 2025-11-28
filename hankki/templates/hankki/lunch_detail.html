@@ -1,0 +1,207 @@
+<!--
+═══════════════════════════════════════════════════════════════════════
+📌 백엔드 담당자를 위한 연동 가이드 (lunch_detail.html)
+═══════════════════════════════════════════════════════════════════════
+
+🔴 이 파일에서 백엔드 연동이 필요한 항목:
+  1. 도시락 이름
+  2. 요리사 이름
+  3. 가격
+  4. 재고 수량
+  5. 도시락 이미지
+  6. 별점
+  7. 리뷰 개수
+  8. 포함 재료
+  9. 알레르기 정보
+
+🔍 수정 위치 찾는 방법:
+  - "🔴" 또는 "백엔드 연동" 키워드로 검색하세요
+
+📝 수정해야 할 위치:
+  [ ] 1. 헤더 도시락 이름 (약 19번째 줄)
+      현재: 도시락 패키지 이름
+      변경: {{ lunch.name }}
+
+  [ ] 2. 도시락 이미지 (약 31번째 줄)
+      현재: placeholder
+      변경: {{ lunch.image_url }}
+
+  [ ] 3. 도시락 이름 본문 (약 43번째 줄)
+      현재: 건강 제육 고기 도시락
+      변경: {{ lunch.name }}
+
+  [ ] 4. 요리사 이름 (약 46번째 줄)
+      현재: 김영희
+      변경: {{ lunch.chef_name }}
+
+  [ ] 5. 별점 (약 52번째 줄)
+      현재: 3.7
+      변경: {{ lunch.rating }}
+
+  [ ] 6. 리뷰 개수 (약 53번째 줄)
+      현재: 13
+      변경: {{ lunch.review_count }}
+
+  [ ] 7. 재고 (약 58번째 줄)
+      현재: 7
+      변경: {{ lunch.stock }}
+
+  [ ] 8. 가격 (약 64번째 줄)
+      현재: 5,000
+      변경: {{ lunch.price }}
+
+  [ ] 9. 포함 재료 (약 73-82번째 줄)
+      현재: 하드코딩
+      변경: 주석 해제하고 템플릿 태그 사용
+
+  [ ] 10. 알레르기 정보 (약 91번째 줄)
+      현재: 대두, 계란 포함
+      변경: {{ lunch.allergy_info }}
+
+📦 views.py에서 전달해야 할 context:
+  context = {
+      'lunch': {
+          'name': '건강 제육 고기 도시락',
+          'chef_name': '김영희',
+          'price': 5000,
+          'stock': 7,
+          'image_url': '/static/images/lunch1.jpg',
+          'rating': 3.7,
+          'review_count': 7,
+          'ingredients': ['현미밥', '두부 스테이크', '야채 샐러드', '삶은 달걀'],
+          'allergy_info': '대두, 계란 포함',
+      }
+  }
+
+═══════════════════════════════════════════════════════════════════════
+-->
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>도시락 상세 - 마을한끼</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<div class="phone-frame" id="phone-frame">
+
+  <!-- 상단 헤더 -->
+  <header class="mh-header">
+    <button class="mh-back-btn" onclick="history.back()">&#x2039; Back</button>
+
+    <!-- 🔴 백엔드 연동: {{ lunch.name }} -->
+    <div class="mh-header-title">
+      도시락 패키지 이름
+    </div>
+
+    <div class="mh-header-spacer"></div>
+  </header>
+
+  <!-- 메인 내용 -->
+  <main class="mh-main" id="main-content">
+
+    <!-- 도시락 이미지 (스크롤에 따라 크기 변함) -->
+    <section class="mh-lunch-image-wrap" id="image-wrap">
+      <!-- 🔴 백엔드 연동: {{ lunch.image_url }} -->
+      <img src="https://via.placeholder.com/340x240" alt="도시락 이미지" id="lunch-image">
+    </section>
+
+    <!-- 도시락 기본 정보 -->
+    <div class="mh-lunch-info">
+      <!-- 🔴 백엔드 연동: {{ lunch.name }} -->
+      <h1 class="mh-lunch-name">떡볶이</h1>
+
+      <!-- 🔴 백엔드 연동: {{ lunch.chef_name }} -->
+      <p class="mh-chef-name">김영희 요리사님</p>
+
+      <!-- 별점 (클릭 시 리뷰로 이동) -->
+      <a href="#reviews" class="mh-rating-row">
+        <span class="mh-star">★</span>
+        <!-- 🔴 백엔드 연동: {{ lunch.rating }}, {{ lunch.review_count }} -->
+        <span class="mh-rating-num">3.7</span>
+        <span class="mh-rating-count">(7)</span>
+        <span class="mh-rating-arrow">→</span>
+      </a>
+
+      <!-- 🔴 백엔드 연동: {{ lunch.stock }} -->
+      <p class="mh-lunch-stock">재고: <span class="mh-stock-num">7</span>개</p>
+
+      <!-- 가격 (좌우 정렬) -->
+      <div class="mh-price-row">
+        <span class="mh-price-label">가격</span>
+        <!-- 🔴 백엔드 연동: {{ lunch.price }} -->
+        <span class="mh-price-value">5,000원</span>
+      </div>
+    </div>
+
+    <!-- 구분선 -->
+    <div class="mh-divider"></div>
+
+    <!-- 포함 재료 -->
+    <section class="mh-section">
+      <h2 class="mh-section-title">포함 재료</h2>
+
+      <!-- 🔴 백엔드 연동: 아래 주석 해제하고 하드코딩 부분 삭제 -->
+      <!--
+      <ul class="mh-ingredient-list">
+        {% for ingredient in lunch.ingredients %}
+        <li>{{ ingredient }}</li>
+        {% endfor %}
+      </ul>
+      -->
+
+      <!-- 임시 데이터 (백엔드 연동 전까지 사용) -->
+      <ul class="mh-ingredient-list">
+        <li>현미밥</li>
+        <li>두부 스테이크</li>
+        <li>야채 샐러드</li>
+        <li>삶은 달걀</li>
+      </ul>
+    </section>
+
+    <!-- 구분선 -->
+    <div class="mh-divider"></div>
+
+    <!-- 알레르기 정보 -->
+    <section class="mh-section">
+      <h2 class="mh-section-title">알레르기 정보</h2>
+      <!-- 🔴 백엔드 연동: {{ lunch.allergy_info }} -->
+      <p class="mh-allergy-text">대두, 계란 포함</p>
+    </section>
+
+  </main>
+
+  <!-- 하단 도시락 예약 버튼 -->
+  <div class="mh-bottom-btn-wrap">
+    <a class="mh-main-btn" href="{% url 'lunch_reserve' %}">도시락 예약</a>
+  </div>
+
+</div>
+
+<script>
+  // 스크롤에 따른 이미지 크기 조절 (마을한끼 스타일)
+  const mainContent = document.getElementById('main-content');
+  const imageWrap = document.getElementById('image-wrap');
+  const lunchImage = document.getElementById('lunch-image');
+
+  const ORIGINAL_HEIGHT = 230; // 원래 이미지 높이 (px)
+  const MIN_HEIGHT = 180;      // 최소 이미지 높이 (px)
+
+  mainContent.addEventListener('scroll', function() {
+    const scrollTop = mainContent.scrollTop;
+
+    // 스크롤 양에 따라 높이 계산
+    // 스크롤 0 → 230px (원래 크기)
+    // 스크롤 50+ → 180px (최소 크기)
+    const newHeight = Math.max(MIN_HEIGHT, ORIGINAL_HEIGHT - scrollTop);
+
+    // 이미지 높이만 조절 (부드럽게)
+    lunchImage.style.height = newHeight + 'px';
+  });
+</script>
+
+</body>
+</html>

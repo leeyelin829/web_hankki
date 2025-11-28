@@ -1,0 +1,282 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>도시락 예약 - 마을한끼</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<div class="phone-frame">
+
+  <!-- 상단 헤더 -->
+  <header class="mh-header">
+    <button class="mh-back-btn" onclick="history.back()">&#x2039; Back</button>
+    <div class="mh-header-title">도시락 예약</div>
+    <div class="mh-header-spacer"></div>
+  </header>
+
+  <!-- 메인 컨텐츠 -->
+  <main class="mh-main">
+    <form class="mh-form" id="reserve-form">
+
+      <!-- 픽업 시간 -->
+      <section class="mh-card">
+        <p class="mh-card-title-highlight">
+          <strong>픽업 시간</strong>을 선택해주세요.
+        </p>
+        <p class="mh-help-text">픽업 가능 시간: 08:00 ~ 19:00</p>
+
+        <div class="mh-time-row">
+          <select name="hour" class="mh-input mh-input-inline" id="hour-select" required>
+            <option value="">시</option>
+            <option value="08">08</option>
+            <option value="09">09</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+            <option value="13">13</option>
+            <option value="14">14</option>
+            <option value="15">15</option>
+            <option value="16">16</option>
+            <option value="17">17</option>
+            <option value="18">18</option>
+            <option value="19">19</option>
+          </select>
+
+         <select name="minute" class="mh-input mh-input-inline" id="minute-select" required>
+             <option value="">분</option>
+             <option value="00">00</option>
+             <option value="05">05</option>
+             <option value="10">10</option>
+             <option value="15">15</option>
+             <option value="20">20</option>
+             <option value="25">25</option>
+             <option value="30">30</option>
+             <option value="35">35</option>
+             <option value="40">40</option>
+             <option value="45">45</option>
+             <option value="50">50</option>
+             <option value="55">55</option>
+            </select>
+        </div>
+      </section>
+
+      <!-- 픽업 장소 -->
+      <section class="mh-card">
+        <p class="mh-card-title-highlight">
+          <strong>픽업 장소</strong>를 선택해주세요.
+        </p>
+
+        <select name="pickup_place" class="mh-input" id="pickup-select" required>
+          <option value="">픽업 장소를 선택해 주세요</option>
+          <option value="hall">학생회관 픽업존</option>
+          <option value="plaza">연세플라자 픽업존</option>
+        </select>
+      </section>
+
+      <!-- 수량 선택 -->
+      <section class="mh-card">
+        <p class="mh-card-title">수량</p>
+
+        <div class="mh-qty-row">
+          <button type="button" class="mh-qty-btn" id="qty-minus">-</button>
+          <span class="mh-qty-value" id="qty-display">1개</span>
+          <button type="button" class="mh-qty-btn" id="qty-plus">+</button>
+        </div>
+
+        <p class="mh-stock-text" id="stock-info">재고: 7개</p>
+        <p class="mh-stock-warning" id="stock-warning">7개까지 주문 가능합니다</p>
+
+        <p class="mh-total-text" id="total-price">
+          총액: <span>9,000원</span>
+        </p>
+      </section>
+
+      <!-- 결제 정보 -->
+      <section class="mh-card">
+        <p class="mh-card-title">결제예정금액</p>
+
+        <div class="mh-payment-detail">
+          <div class="mh-payment-row">
+            <span class="mh-payment-label">잔액</span>
+            <span class="mh-payment-value" id="balance-display">50,000원</span>
+          </div>
+          <div class="mh-payment-row">
+            <span class="mh-payment-label">결제금액</span>
+            <span class="mh-payment-value" id="payment-amount">9,000원</span>
+          </div>
+          <div class="mh-payment-divider"></div>
+          <div class="mh-payment-row mh-payment-result">
+            <span class="mh-payment-label" id="result-label">남은 잔액</span>
+            <span class="mh-payment-value" id="result-amount">41,000원</span>
+          </div>
+        </div>
+
+        <!-- 잔액 부족 경고 -->
+        <div class="mh-balance-warning" id="balance-warning">
+          <p>잔액이 부족합니다!</p>
+          <p>
+            <a href="{% url 'charge' %}" class="mh-charge-link" id="charge-link">충전하기</a>
+          </p>
+        </div>
+      </section>
+
+      <!-- hidden inputs for form submission -->
+      <input type="hidden" name="quantity" id="hidden-quantity" value="1">
+      <input type="hidden" name="total_price" id="hidden-total-price" value="9000">
+
+    </form>
+  </main>
+
+  <!-- 하단 예약 버튼 -->
+  <div class="mh-bottom-btn-wrap">
+    <button type="button" class="mh-main-btn" id="reserve-btn">예약하기</button>
+  </div>
+
+</div>
+
+<script>
+  // 🔴 백엔드 연동 시: const UNIT_PRICE = {{ lunch.price }};
+  const UNIT_PRICE = 9000;
+
+  // 🔴 백엔드 연동 시: const STOCK_QTY = {{ lunch.stock }};
+  const STOCK_QTY = 7;
+
+  // 🔴 백엔드 연동 시: const USER_BALANCE = {{ user.balance }};
+  // URL 파라미터로 balance 받기 (charge에서 전달)
+  const urlParams = new URLSearchParams(window.location.search);
+  const USER_BALANCE = parseInt(urlParams.get('balance')) || 50000;
+
+  const MIN_QTY = 1;
+  const MAX_QTY = 10;
+
+  let currentQty = 1;
+
+  // DOM 요소
+  const qtyDisplay = document.getElementById('qty-display');
+  const stockInfo = document.getElementById('stock-info');
+  const stockWarning = document.getElementById('stock-warning');
+  const totalPriceSpan = document.getElementById('total-price').querySelector('span');
+  const balanceDisplay = document.getElementById('balance-display');
+  const paymentAmount = document.getElementById('payment-amount');
+  const resultLabel = document.getElementById('result-label');
+  const resultAmount = document.getElementById('result-amount');
+  const balanceWarning = document.getElementById('balance-warning');
+  const chargeLink = document.getElementById('charge-link');
+  const reserveBtn = document.getElementById('reserve-btn');
+
+  const hiddenQuantity = document.getElementById('hidden-quantity');
+  const hiddenTotalPrice = document.getElementById('hidden-total-price');
+
+  // 초기 표시
+  balanceDisplay.textContent = formatNumber(USER_BALANCE) + '원';
+  updateDisplay();
+
+  // 수량 증가
+  document.getElementById('qty-plus').addEventListener('click', function() {
+    if (currentQty < Math.min(STOCK_QTY, MAX_QTY)) {
+      currentQty++;
+      updateDisplay();
+    }
+
+    if (currentQty === Math.min(STOCK_QTY, MAX_QTY)) {
+      stockWarning.style.display = 'block';
+    }
+  });
+
+  // 수량 감소
+  document.getElementById('qty-minus').addEventListener('click', function() {
+    if (currentQty > MIN_QTY) {
+      currentQty--;
+      updateDisplay();
+      stockWarning.style.display = 'none';
+    }
+  });
+
+  // 화면 업데이트
+  function updateDisplay() {
+    const totalPrice = UNIT_PRICE * currentQty;
+    const remaining = USER_BALANCE - totalPrice;
+
+    // 수량 및 가격 표시
+    qtyDisplay.textContent = currentQty + '개';
+    totalPriceSpan.textContent = formatNumber(totalPrice) + '원';
+    paymentAmount.textContent = formatNumber(totalPrice) + '원';
+
+    // hidden inputs 업데이트
+    hiddenQuantity.value = currentQty;
+    hiddenTotalPrice.value = totalPrice;
+
+    // 잔액 체크
+    if (remaining < 0) {
+      // 잔액 부족
+      resultLabel.textContent = '부족 금액';
+      resultAmount.textContent = formatNumber(Math.abs(remaining)) + '원';
+      resultAmount.style.color = '#e03131';
+      balanceWarning.style.display = 'block';
+
+      // 충전하기 링크 흔들림
+      chargeLink.classList.add('shake');
+      setTimeout(() => {
+        chargeLink.classList.remove('shake');
+      }, 1500);
+    } else {
+      // 잔액 충분
+      resultLabel.textContent = '남은 잔액';
+      resultAmount.textContent = formatNumber(remaining) + '원';
+      resultAmount.style.color = '#12b886';
+      balanceWarning.style.display = 'none';
+    }
+  }
+
+  // 숫자 포맷
+  function formatNumber(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  // 예약하기 버튼 클릭
+  reserveBtn.addEventListener('click', function() {
+    const hourSelect = document.getElementById('hour-select');
+    const minuteSelect = document.getElementById('minute-select');
+    const pickupSelect = document.getElementById('pickup-select');
+
+    // 유효성 검증 1: 시간 선택
+    if (!hourSelect.value || !minuteSelect.value) {
+      alert('픽업 시간을 선택해주세요.');
+      hourSelect.focus();
+      return;
+    }
+
+    // 유효성 검증 2: 장소 선택
+    if (!pickupSelect.value) {
+      alert('픽업 장소를 선택해주세요.');
+      pickupSelect.focus();
+      return;
+    }
+
+    // 유효성 검증 3: 잔액 확인
+    const totalPrice = UNIT_PRICE * currentQty;
+    const remaining = USER_BALANCE - totalPrice;
+
+    if (remaining < 0) {
+      alert('잔액이 부족합니다. 충전 후 다시 시도해주세요.');
+      return;
+    }
+
+    // 예약 완료 페이지로 이동 (파라미터 전달)
+    const hour = hourSelect.value;
+    const minute = minuteSelect.value;
+    const pickupPlace = pickupSelect.value;
+    const quantity = currentQty;
+
+    const completeUrl = `{% url 'lunch_complete' %}?hour=${hour}&minute=${minute}&pickup_place=${pickupPlace}&quantity=${quantity}&total_price=${totalPrice}`;
+    
+    window.location.href = completeUrl;
+  });
+</script>
+
+</body>
+</html>

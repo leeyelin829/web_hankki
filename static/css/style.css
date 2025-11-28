@@ -1,0 +1,778 @@
+/* ===== 공통 레이아웃 ===== */
+body {
+  margin: 0;
+  padding: 0;
+  background: #f2f2f2;
+  font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+}
+
+/* 가운데 폰 프레임 (비율 고정) */
+.phone-frame {
+  width: min(375px, 100vw - 32px);
+  aspect-ratio: 375 / 812;
+  background: #ffffff;
+  border-radius: 24px;
+  margin: 16px 0;
+  box-shadow: 0 0 16px rgba(0,0,0,0.15);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== 헤더 ===== */
+.mh-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px 10px;
+  font-size: 13px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #ffffff;
+}
+
+.mh-back-btn {
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  color: #555;
+  cursor: pointer;
+  padding: 0;
+}
+
+.mh-header-title {
+  flex: 1;
+  text-align: center;
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.mh-header-spacer {
+  width: 40px;
+}
+
+/* ===== 메인 컨텐츠 ===== */
+.mh-main {
+  padding: 0 16px 90px;
+  font-size: 13px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* ===== 도시락 상세 페이지 (lunch_detail) ===== */
+
+/* 도시락 이미지 (스크롤 시 축소/확대) */
+.mh-lunch-image-wrap {
+  margin-top: 16px;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.mh-lunch-image-wrap img {
+  display: block;
+  width: 100%;
+  height: 230px;
+  object-fit: cover;
+  transition: height 0.1s ease-out;
+}
+
+/* 도시락 기본 정보 */
+.mh-lunch-info {
+  padding: 16px 0 16px;
+}
+
+.mh-lunch-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #000;
+  margin: 0 0 6px 0;
+  line-height: 1.3;
+}
+
+.mh-chef-name {
+  font-size: 12px;
+  color: #888;
+  margin: 0 0 12px 0;
+}
+
+/* 별점 + 텍스트 */
+.mh-rating-row {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  gap: 4px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  margin-bottom: 12px;
+}
+
+.mh-rating-row:hover {
+  opacity: 0.7;
+}
+
+.mh-star {
+  font-size: 13px;
+  color: #f6b800;
+}
+
+.mh-rating-num {
+  font-size: 12px;
+  color: #444;
+}
+
+.mh-rating-count {
+  font-size: 12px;
+  color: #888;
+}
+
+.mh-rating-arrow {
+  font-size: 14px;
+  color: #999;
+  margin-left: 4px;
+}
+
+/* 재고 */
+.mh-lunch-stock {
+  font-size: 13px;
+  color: #555;
+  margin: 0 0 16px 0;
+}
+
+.mh-stock-num {
+  font-weight: 600;
+  color: #333;
+}
+
+/* 가격 (좌우 정렬) */
+.mh-price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+}
+
+.mh-price-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000;
+}
+
+.mh-price-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #000;
+}
+
+/* 구분선 (배민 스타일) */
+.mh-divider {
+  height: 8px;
+  background: #f8f8f8;
+  margin: 0 -16px;
+}
+
+/* 섹션 공통 */
+.mh-section {
+  margin-top: 20px;
+}
+
+.mh-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.mh-ingredient-list {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.mh-ingredient-list li {
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+/* 알레르기 정보 (빨간 글씨만, 박스 X) */
+.mh-allergy-text {
+  font-size: 13px;
+  color: #e03131;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ===== 예약 페이지 (lunch_reserve) ===== */
+
+/* 폼 전체 구성 */
+.mh-form {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* 카드 박스 (픽업 시간 / 장소 안내 / 수량) */
+.mh-card {
+  background: #f6f6f6;
+  border-radius: 16px;
+  padding: 12px 12px 16px;
+  margin-top: 16px;
+}
+
+.mh-card-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* 입력 공통 */
+.mh-input {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: none;
+  background: #ffffff;
+  font-size: 13px;
+  outline: none;
+}
+
+.mh-input::placeholder {
+  color: #b0b0b0;
+}
+
+.mh-help-text {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #888;
+  line-height: 1.4;
+}
+
+/* 픽업 시간 2개 인라인 선택 (시/분) */
+.mh-time-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.mh-input-inline {
+  flex: 1;
+  margin-top: 0;
+}
+
+/* 지도 이미지 박스 */
+.mh-map {
+  margin-top: 10px;
+  border-radius: 12px;
+  background: #e5e5e5;
+  height: 120px;
+  overflow: hidden;
+}
+
+.mh-map img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* 수량 (- n개 +) 영역 */
+.mh-qty-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.mh-qty-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 18px;
+  border: none;
+  background: #ffffff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.mh-qty-value {
+  min-width: 40px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.mh-stock-text {
+  margin-top: 6px;
+  text-align: center;
+  font-size: 11px;
+  color: #666;
+}
+
+.mh-stock-warning {
+  margin-top: 4px;
+  text-align: center;
+  font-size: 11px;
+  color: #e03131;
+  display: none;
+}
+
+.mh-total-text {
+  margin-top: 8px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.mh-total-text span {
+  color: #ff5a00;
+}
+
+/* ===== 예약 완료 페이지 (lunch_complete) ===== */
+
+.mh-complete-card {
+  text-align: center;
+  width: 100%;
+}
+
+.mh-complete-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #e8fff1;
+  color: #12b886;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  margin: 0 auto 16px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.mh-complete-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.mh-complete-subtitle {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 16px;
+}
+
+.mh-complete-info {
+  text-align: left;
+  background: #f6f6f6;
+  border-radius: 14px;
+  padding: 12px 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.mh-complete-info p {
+  margin: 2px 0;
+}
+
+.mh-complete-highlight {
+  font-weight: 600;
+  color: #333;
+}
+
+.mh-complete-notice {
+  font-size: 11px;
+  color: #888;
+  line-height: 1.5;
+}
+
+/* 완료 페이지 메인 영역 조정 */
+.mh-main.mh-complete-main {
+  padding: 24px 20px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ===== 하단 버튼 영역 ===== */
+
+.mh-bottom-btn-wrap {
+  position: sticky;
+  bottom: 0;
+  padding: 12px 16px 20px;
+  background: linear-gradient(to top, #ffffff, #ffffffee, #ffffff00);
+  margin-top: auto;
+}
+
+/* 완료 페이지 하단 버튼 조정 */
+.mh-bottom-btn-wrap.mh-complete-btn-wrap {
+  padding: 10px 16px 20px;
+  border-top: 1px solid #f0f0f0;
+  background: #ffffff;
+  display: flex;
+  gap: 8px;
+}
+
+.mh-main-btn {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  width: 100%;
+  padding: 13px 0;
+  border-radius: 999px;
+  border: none;
+  background: #ff5a00;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* 완료 페이지 메인 버튼 조정 */
+.mh-complete-btn-wrap .mh-main-btn {
+  flex: 1;
+  padding: 12px 0;
+}
+
+.mh-sub-btn {
+  flex: 1;
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  padding: 12px 0;
+  border-radius: 999px;
+  border: 1px solid #dddddd;
+  background: #ffffff;
+  color: #333333;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* ===== 예약 페이지: 강조 타이틀 ===== */
+
+.mh-card-title-highlight {
+  font-size: 14px;
+  font-weight: 400;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.mh-card-title-highlight strong {
+  font-size: 16px;
+  font-weight: 700;
+  color: #000;
+}
+
+/* ===== 결제 정보 상세 ===== */
+
+.mh-payment-detail {
+  margin-top: 12px;
+  padding: 0;
+}
+
+.mh-payment-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 14px;
+}
+
+.mh-payment-label {
+  color: #555;
+  font-weight: 400;
+}
+
+.mh-payment-value {
+  color: #333;
+  font-weight: 600;
+}
+
+.mh-payment-divider {
+  height: 1px;
+  background: #ddd;
+  margin: 8px 0;
+}
+
+.mh-payment-result {
+  padding-top: 12px;
+}
+
+.mh-payment-result .mh-payment-label {
+  font-weight: 600;
+  color: #333;
+}
+
+.mh-payment-result .mh-payment-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: #12b886;
+}
+
+/* ===== 잔액 부족 경고 ===== */
+
+.mh-balance-warning {
+  margin-top: 16px;
+  padding: 12px;
+  background: #fff5f5;
+  border: 1px solid #ffc9c9;
+  border-radius: 8px;
+  text-align: center;
+  display: none;
+}
+
+.mh-balance-warning p {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  color: #e03131;
+  line-height: 1.4;
+}
+
+/* ===== 충전하기 링크 ===== */
+
+.mh-charge-link {
+  display: inline-block;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ff5a00;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.mh-charge-link:hover {
+  color: #ff7a2f;
+}
+
+/* ===== 흔들림 애니메이션 ===== */
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-5px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(5px);
+  }
+}
+
+.mh-charge-link.shake {
+  animation: shake 0.5s ease-in-out 3;
+}
+
+/* ===== 충전 페이지 (charge) ===== */
+
+/* 충전 카드 (풍선 형태) */
+.mh-charge-card {
+  background: #f6f6f6;
+  border-radius: 16px;
+  padding: 16px;
+  margin-top: 12px;
+}
+
+.mh-charge-card:first-of-type {
+  margin-top: 16px;
+}
+
+/* 클릭 가능한 카드 */
+.mh-charge-clickable {
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.mh-charge-clickable:hover {
+  background: #eeeeee;
+}
+
+/* 카드 내 행 (좌우 정렬) */
+.mh-charge-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.mh-charge-row:last-child {
+  margin-bottom: 0;
+}
+
+.mh-charge-label {
+  font-size: 13px;
+  color: #666;
+}
+
+.mh-charge-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.mh-charge-label-bold {
+  font-size: 14px;
+  font-weight: 600;
+  color: #000;
+}
+
+.mh-charge-value-bold {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ff5a00;
+}
+
+/* 타이틀 */
+.mh-charge-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #000;
+  margin: 0 0 12px 0;
+}
+
+.mh-charge-subtitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #000;
+  margin: 0 0 12px 0;
+}
+
+.mh-charge-badge {
+  font-size: 13px;
+  color: #666;
+}
+
+.mh-charge-notice {
+  font-size: 12px;
+  color: #888;
+  margin: 4px 0 0 0;
+}
+
+/* 금액 선택 버튼 */
+.mh-amount-buttons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.mh-amount-btn {
+  flex: 1;
+  padding: 12px 8px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mh-amount-btn:hover {
+  border-color: #ff5a00;
+}
+
+.mh-amount-btn.active {
+  border: 2px solid #ff5a00;
+  background: #fff5f0;
+  color: #ff5a00;
+}
+
+/* 직접 입력 */
+.mh-amount-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.mh-amount-input:focus {
+  border-color: #ff5a00;
+}
+
+.mh-amount-input.error {
+  border-color: #e03131;
+  background: #fff5f5;
+}
+
+.mh-amount-input::placeholder {
+  color: #b0b0b0;
+}
+
+/* 경고 문구 */
+.mh-charge-warning {
+  font-size: 11px;
+  color: #e03131;
+  margin: 6px 0 0 0;
+  display: none;
+}
+
+/* 결제수단 옵션 */
+.mh-payment-option {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #e5e5e5;
+  cursor: pointer;
+}
+
+.mh-payment-option:last-of-type {
+  border-bottom: none;
+}
+
+.mh-payment-option input[type="radio"] {
+  margin-right: 10px;
+}
+
+.mh-payment-text {
+  font-size: 14px;
+  color: #333;
+}
+
+/* 현금영수증 옵션 */
+.mh-receipt-option {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  cursor: pointer;
+}
+
+.mh-receipt-option input[type="radio"] {
+  margin-right: 8px;
+}
+
+.mh-receipt-option span {
+  font-size: 13px;
+  color: #333;
+}
+
+.mh-receipt-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  margin: 8px 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 13px;
+  outline: none;
+}
+
+.mh-receipt-input:disabled {
+  background: #f0f0f0;
+  color: #999;
+}
+
+.mh-receipt-input:focus {
+  border-color: #ff5a00;
+}
