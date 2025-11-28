@@ -1,12 +1,42 @@
 from django import forms
 from django.forms import inlineformset_factory
 
-from .models import HealthCategory, LunchboxModel, OrderModel, OrderItemModel
+from .models import HealthCategory, Allergy, LunchboxModel, OrderModel, OrderItemModel, IngredientsModel
 
 class HealthCategoryForm(forms.ModelForm):
     class Meta:
         model = HealthCategory
         fields = ('name', 'description')
+
+
+
+class IngredientsForm(forms.ModelForm):
+
+    allergy = forms.MultipleChoiceField(
+        required=False,
+        choices=Allergy.get_choices(),
+        widget=forms.CheckboxSelectMultiple,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk and self.instance.allergy:
+            current_mask = self.instance.allergy
+            selected_values = []
+            for value, _ in Allergy.get_choices():
+                if current_mask & value:
+                    selected_values.append(str(value))
+            self.initial['allergy'] = selected_values
+
+    def clean_allergy(self):
+        bitmask_value = 0
+        for val_str in self.cleaned_data.get('allergy', []):
+            bitmask_value |= int(val_str)
+        return bitmask_value
+
+    class Meta:
+        model = IngredientsModel
+        fields = ('name', 'allergy')
 
 
 class LunchboxForm(forms.ModelForm):
@@ -18,6 +48,7 @@ class LunchboxForm(forms.ModelForm):
             'image',
             'food_category',
             'health_category',
+            'ingredient',
             'price',
             'discount_price',
             'stock',
@@ -26,6 +57,7 @@ class LunchboxForm(forms.ModelForm):
             'image': forms.FileInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'rows': 4}),
             'health_category': forms.CheckboxSelectMultiple,
+            'ingredient': forms.CheckboxSelectMultiple,
         }
         labels = {
             'name': '도시락 상품명',
@@ -33,6 +65,7 @@ class LunchboxForm(forms.ModelForm):
             'image': '도시락 이미지',
             'food_category': '음식 종류',
             'health_category': '건강 카테고리',
+            'ingredient': '포함 재료',
             'price': '판매 가격',
             'discount_price': '할인 가격',
             'stock': '재고 수량',
@@ -58,7 +91,7 @@ class OrderForm(forms.ModelForm):
             'delivery_address'
         ]
         widgets = {
-            'pickup_date_time': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'pickup_date_time': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'mh-input',}),
             'delivery_address': forms.Textarea(attrs={'rows': 3}),
         }
     def clean(self):

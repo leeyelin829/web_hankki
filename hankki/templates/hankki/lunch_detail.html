@@ -92,9 +92,8 @@
   <header class="mh-header">
     <button class="mh-back-btn" onclick="history.back()">&#x2039; Back</button>
 
-    <!-- 🔴 백엔드 연동: {{ lunch.name }} -->
     <div class="mh-header-title">
-      도시락 패키지 이름
+      {{ lunchbox.name }}
     </div>
 
     <div class="mh-header-spacer"></div>
@@ -106,16 +105,18 @@
     <!-- 도시락 이미지 (스크롤에 따라 크기 변함) -->
     <section class="mh-lunch-image-wrap" id="image-wrap">
       <!-- 🔴 백엔드 연동: {{ lunch.image_url }} -->
-      <img src="https://via.placeholder.com/340x240" alt="도시락 이미지" id="lunch-image">
+      {% if lunchbox.image %}
+        <img src="{{ lunchbox.image.url }}" alt="도시락 이미지" id="lunch-image">
+      {% else %}
+        <img src="https://via.placeholder.com/340x240" alt="도시락 이미지" id="lunch-image">
+      {% endif %}
     </section>
 
     <!-- 도시락 기본 정보 -->
     <div class="mh-lunch-info">
-      <!-- 🔴 백엔드 연동: {{ lunch.name }} -->
-      <h1 class="mh-lunch-name">떡볶이</h1>
+      <h1 class="mh-lunch-name">{{ lunchbox.name }}</h1>
 
-      <!-- 🔴 백엔드 연동: {{ lunch.chef_name }} -->
-      <p class="mh-chef-name">김영희 요리사님</p>
+      <p class="mh-chef-name">{{ lunchbox.supplier.username }} 요리사님</p>
 
       <!-- 별점 (클릭 시 리뷰로 이동) -->
       <a href="#reviews" class="mh-rating-row">
@@ -126,57 +127,48 @@
         <span class="mh-rating-arrow">→</span>
       </a>
 
-      <!-- 🔴 백엔드 연동: {{ lunch.stock }} -->
-      <p class="mh-lunch-stock">재고: <span class="mh-stock-num">7</span>개</p>
+      <p class="mh-lunch-stock">재고: <span class="mh-stock-num">{{ lunchbox.stock }}</span>개</p>
 
       <!-- 가격 (좌우 정렬) -->
       <div class="mh-price-row">
         <span class="mh-price-label">가격</span>
-        <!-- 🔴 백엔드 연동: {{ lunch.price }} -->
-        <span class="mh-price-value">5,000원</span>
+        <span class="mh-price-value">{{ lunchbox.price }}원</span>
       </div>
+
+      <p>{{ lunchbox.description | escape | linebreaks }}</p>
     </div>
 
-    <!-- 구분선 -->
     <div class="mh-divider"></div>
 
     <!-- 포함 재료 -->
     <section class="mh-section">
       <h2 class="mh-section-title">포함 재료</h2>
 
-      <!-- 🔴 백엔드 연동: 아래 주석 해제하고 하드코딩 부분 삭제 -->
-      <!--
-      <ul class="mh-ingredient-list">
-        {% for ingredient in lunch.ingredients %}
-        <li>{{ ingredient }}</li>
-        {% endfor %}
-      </ul>
-      -->
-
-      <!-- 임시 데이터 (백엔드 연동 전까지 사용) -->
-      <ul class="mh-ingredient-list">
-        <li>현미밥</li>
-        <li>두부 스테이크</li>
-        <li>야채 샐러드</li>
-        <li>삶은 달걀</li>
-      </ul>
+      {% if lunchbox.ingredient %}
+        <ul class="mh-ingredient-list">
+          {% for it in lunchbox.ingredient.all %}
+          <li>{{ it }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
     </section>
 
     <!-- 구분선 -->
     <div class="mh-divider"></div>
 
     <!-- 알레르기 정보 -->
-    <section class="mh-section">
-      <h2 class="mh-section-title">알레르기 정보</h2>
-      <!-- 🔴 백엔드 연동: {{ lunch.allergy_info }} -->
-      <p class="mh-allergy-text">대두, 계란 포함</p>
-    </section>
+    {% if allergy %}
+      <section class="mh-section">
+        <h2 class="mh-section-title">알레르기 정보</h2>
+        <p class="mh-allergy-text">{{allergy}} 포함</p>
+      </section>
+    {% endif %}
 
   </main>
 
   <!-- 하단 도시락 예약 버튼 -->
   <div class="mh-bottom-btn-wrap">
-    <a class="mh-main-btn" href="{% url 'lunch_reserve' %}">도시락 예약</a>
+    <a class="mh-main-btn" href="{% url 'hankki:cart' id=id %}?next={% url 'hankki:lunchbox_list' %}">도시락 예약</a>
   </div>
 
 </div>

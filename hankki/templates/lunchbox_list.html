@@ -79,7 +79,7 @@
                     </td>
                     <td>
                         {% if lunchbox.stock > 0 %}
-                            <a href="{% url 'hankki:cart' id=lunchbox.id %}" class="add-cart-link sold-out">장바구니 담기</a>
+                            <a href="{% url 'hankki:lunch_detail' id=lunchbox.id %}" class="add-cart-link sold-out">장바구니 담기</a>
                         {% else %}
                             <div class="add-cart-link sold-out">품절</div>
                         {% endif %}

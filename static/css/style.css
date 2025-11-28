@@ -776,3 +776,88 @@ body {
 .mh-receipt-input:focus {
   border-color: #ff5a00;
 }
+
+.mh-lunchbox-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* 각 도시락 아이템 */
+.mh-lunchbox-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0; /* 리스트 구분선 */
+}
+
+.mh-lunchbox-item:last-child {
+    border-bottom: none;
+}
+
+/* 이미지 */
+.mh-lunchbox-img-wrap {
+    width: 60px;
+    height: 60px;
+    overflow: hidden;
+    border-radius: 8px;
+    flex-shrink: 0;
+    margin-right: 12px;
+}
+
+.mh-lunchbox-img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+}
+
+/* 상세 정보 */
+.mh-lunchbox-details {
+    flex-grow: 1;
+}
+
+.mh-lunchbox-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.mh-lunchbox-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mh-lunchbox-qty {
+    font-size: 13px;
+    color: #888;
+}
+
+.mh-lunchbox-price {
+    font-size: 14px;
+    font-weight: 700;
+    color: #ff7f3f; /* 강조 색상 */
+}
+
+.mh-lunchbox-item {
+    /* flex-end 정렬을 위해 필요 */
+    align-items: flex-start;
+}
+
+/* 제거 버튼 스타일 */
+.mh-remove-btn {
+    margin-left: auto; /* 자동 마진으로 오른쪽 끝으로 밀어냅니다. */
+    align-self: flex-start; /* 아이템의 상단에 위치시킵니다. */
+    font-size: 14px;
+    font-weight: 700;
+    color: #aaaaaa;
+    text-decoration: none;
+    padding: 2px 4px;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.mh-remove-btn:hover {
+    color: #e03131; /* 호버 시 빨간색으로 강조 */
+}

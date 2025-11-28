@@ -18,9 +18,11 @@
     <div class="mh-header-spacer"></div>
   </header>
 
-  <!-- 메인 컨텐츠 -->
-  <main class="mh-main">
-    <form class="mh-form" id="reserve-form">
+  <form method="post" class="mh-form" id="reserve-form">
+    {% csrf_token %}
+
+    <!-- 메인 컨텐츠 -->
+    <main class="mh-main">
 
       <!-- 픽업 시간 -->
       <section class="mh-card">
@@ -28,40 +30,7 @@
           <strong>픽업 시간</strong>을 선택해주세요.
         </p>
         <p class="mh-help-text">픽업 가능 시간: 08:00 ~ 19:00</p>
-
-        <div class="mh-time-row">
-          <select name="hour" class="mh-input mh-input-inline" id="hour-select" required>
-            <option value="">시</option>
-            <option value="08">08</option>
-            <option value="09">09</option>
-            <option value="10">10</option>
-            <option value="11">11</option>
-            <option value="12">12</option>
-            <option value="13">13</option>
-            <option value="14">14</option>
-            <option value="15">15</option>
-            <option value="16">16</option>
-            <option value="17">17</option>
-            <option value="18">18</option>
-            <option value="19">19</option>
-          </select>
-
-         <select name="minute" class="mh-input mh-input-inline" id="minute-select" required>
-             <option value="">분</option>
-             <option value="00">00</option>
-             <option value="05">05</option>
-             <option value="10">10</option>
-             <option value="15">15</option>
-             <option value="20">20</option>
-             <option value="25">25</option>
-             <option value="30">30</option>
-             <option value="35">35</option>
-             <option value="40">40</option>
-             <option value="45">45</option>
-             <option value="50">50</option>
-             <option value="55">55</option>
-            </select>
-        </div>
+        {{ form.pickup_date_time }}
       </section>
 
       <!-- 픽업 장소 -->
@@ -70,29 +39,48 @@
           <strong>픽업 장소</strong>를 선택해주세요.
         </p>
 
-        <select name="pickup_place" class="mh-input" id="pickup-select" required>
+        <select name="delivery_address" class="mh-input" id="pickup-select" required>
           <option value="">픽업 장소를 선택해 주세요</option>
           <option value="hall">학생회관 픽업존</option>
           <option value="plaza">연세플라자 픽업존</option>
         </select>
       </section>
 
-      <!-- 수량 선택 -->
+      <!-- 도시락 정보 -->
       <section class="mh-card">
-        <p class="mh-card-title">수량</p>
+        <p class="mh-card-title">주문할 도시락</p>
 
-        <div class="mh-qty-row">
-          <button type="button" class="mh-qty-btn" id="qty-minus">-</button>
-          <span class="mh-qty-value" id="qty-display">1개</span>
-          <button type="button" class="mh-qty-btn" id="qty-plus">+</button>
-        </div>
+        {% for item in queryset %}
+          <div class="mh-lunchbox-item">
 
-        <p class="mh-stock-text" id="stock-info">재고: 7개</p>
-        <p class="mh-stock-warning" id="stock-warning">7개까지 주문 가능합니다</p>
+            {% if item.lunchbox.image %}
+              <div class="mh-lunchbox-img-wrap">
+                <img src="{{ item.lunchbox.image.url }}"
+                     alt="{{ item.lunchbox.name }}"
+                     class="mh-lunchbox-img">
+              </div>
+            {% endif %}
 
-        <p class="mh-total-text" id="total-price">
-          총액: <span>9,000원</span>
-        </p>
+            <div class="mh-lunchbox-details">
+              <p class="mh-lunchbox-name">{{ item.lunchbox.name }}</p>
+
+              <div class="mh-lunchbox-summary">
+                <span class="mh-lunchbox-qty">{{ item.quantity }}개</span>
+                <span class="mh-lunchbox-qty" style="padding-inline: 4px;"></span>
+                <span class="mh-lunchbox-price">{{ item.lunchbox.price }}원</span>
+
+                <a href="{% url 'hankki:del_cart' id=item.id %}?next={{ request.path }}"
+               class="mh-remove-btn"
+               title="주문 항목 제거">
+               제거
+            </a>
+              </div>
+            </div>
+
+          </div>
+          {% empty %}
+          <p class="mh-help-text">주문할 도시락이 없습니다.</p>
+          {% endfor %}
       </section>
 
       <!-- 결제 정보 -->
@@ -119,7 +107,7 @@
         <div class="mh-balance-warning" id="balance-warning">
           <p>잔액이 부족합니다!</p>
           <p>
-            <a href="{% url 'charge' %}" class="mh-charge-link" id="charge-link">충전하기</a>
+            <a href="{% url 'hankki:charge' %}" class="mh-charge-link" id="charge-link">충전하기</a>
           </p>
         </div>
       </section>
@@ -128,22 +116,21 @@
       <input type="hidden" name="quantity" id="hidden-quantity" value="1">
       <input type="hidden" name="total_price" id="hidden-total-price" value="9000">
 
-    </form>
-  </main>
+    </main>
 
-  <!-- 하단 예약 버튼 -->
-  <div class="mh-bottom-btn-wrap">
-    <button type="button" class="mh-main-btn" id="reserve-btn">예약하기</button>
-  </div>
+    <!-- 하단 예약 버튼 -->
+    <div class="mh-bottom-btn-wrap">
+      <button type="submit" class="mh-main-btn" id="reserve-btn">예약하기</button>
+    </div>
+
+  </form>
 
 </div>
 
 <script>
-  // 🔴 백엔드 연동 시: const UNIT_PRICE = {{ lunch.price }};
-  const UNIT_PRICE = 9000;
+  const UNIT_PRICE = {{ price_sum }};
 
-  // 🔴 백엔드 연동 시: const STOCK_QTY = {{ lunch.stock }};
-  const STOCK_QTY = 7;
+  const STOCK_QTY = 1;
 
   // 🔴 백엔드 연동 시: const USER_BALANCE = {{ user.balance }};
   // URL 파라미터로 balance 받기 (charge에서 전달)
@@ -159,7 +146,7 @@
   const qtyDisplay = document.getElementById('qty-display');
   const stockInfo = document.getElementById('stock-info');
   const stockWarning = document.getElementById('stock-warning');
-  const totalPriceSpan = document.getElementById('total-price').querySelector('span');
+  // const totalPriceSpan = document.getElementById('total-price').querySelector('span');
   const balanceDisplay = document.getElementById('balance-display');
   const paymentAmount = document.getElementById('payment-amount');
   const resultLabel = document.getElementById('result-label');
@@ -198,12 +185,12 @@
 
   // 화면 업데이트
   function updateDisplay() {
-    const totalPrice = UNIT_PRICE * currentQty;
+    const totalPrice = {{ price_sum }};
     const remaining = USER_BALANCE - totalPrice;
 
     // 수량 및 가격 표시
-    qtyDisplay.textContent = currentQty + '개';
-    totalPriceSpan.textContent = formatNumber(totalPrice) + '원';
+    // qtyDisplay.textContent = currentQty + '개';
+    // totalPriceSpan.textContent = formatNumber(totalPrice) + '원';
     paymentAmount.textContent = formatNumber(totalPrice) + '원';
 
     // hidden inputs 업데이트
@@ -236,46 +223,6 @@
   function formatNumber(num) {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
-
-  // 예약하기 버튼 클릭
-  reserveBtn.addEventListener('click', function() {
-    const hourSelect = document.getElementById('hour-select');
-    const minuteSelect = document.getElementById('minute-select');
-    const pickupSelect = document.getElementById('pickup-select');
-
-    // 유효성 검증 1: 시간 선택
-    if (!hourSelect.value || !minuteSelect.value) {
-      alert('픽업 시간을 선택해주세요.');
-      hourSelect.focus();
-      return;
-    }
-
-    // 유효성 검증 2: 장소 선택
-    if (!pickupSelect.value) {
-      alert('픽업 장소를 선택해주세요.');
-      pickupSelect.focus();
-      return;
-    }
-
-    // 유효성 검증 3: 잔액 확인
-    const totalPrice = UNIT_PRICE * currentQty;
-    const remaining = USER_BALANCE - totalPrice;
-
-    if (remaining < 0) {
-      alert('잔액이 부족합니다. 충전 후 다시 시도해주세요.');
-      return;
-    }
-
-    // 예약 완료 페이지로 이동 (파라미터 전달)
-    const hour = hourSelect.value;
-    const minute = minuteSelect.value;
-    const pickupPlace = pickupSelect.value;
-    const quantity = currentQty;
-
-    const completeUrl = `{% url 'lunch_complete' %}?hour=${hour}&minute=${minute}&pickup_place=${pickupPlace}&quantity=${quantity}&total_price=${totalPrice}`;
-    
-    window.location.href = completeUrl;
-  });
 </script>
 
 </body>

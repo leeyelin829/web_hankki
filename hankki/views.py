@@ -8,8 +8,8 @@ from django.db import transaction
 from django.urls import reverse_lazy
 
 from .apps import HankkiConfig
-from .models import HealthCategory, LunchboxModel, OrderStatus, OrderModel, OrderItemModel, CartItemModel
-from .forms import HealthCategoryForm, LunchboxForm, SupplierPermissionRequestForm, OrderForm, OrderItemFormSet
+from .models import HealthCategory, Allergy, IngredientsModel, LunchboxModel, OrderStatus, OrderModel, OrderItemModel, CartItemModel
+from .forms import HealthCategoryForm, IngredientsForm, LunchboxForm, SupplierPermissionRequestForm, OrderForm, OrderItemFormSet
 
 
 logger = logging.getLogger(HankkiConfig.name)
@@ -167,6 +167,13 @@ def cart(request, id, quantity=1):
     cart.save()
     return redirect('hankki:lunchbox_list')
 
+@login_required
+def del_cart(request, id):
+    cart_item = get_object_or_404(CartItemModel, id=id)
+    if cart_item.user == request.user:
+        cart_item.delete()
+    return redirect(request.GET.get('next'))
+
 
 
 # ===========
@@ -192,56 +199,91 @@ def supplier(request):
 
 # ============
 
-def lunch_detail(request):
-    return render(request, 'hankki/lunch_detail.html')
+def write_ingredients(request, id=None):
+    if id:
+        ingredients = get_object_or_404(IngredientsModel, id=id)
+    else:
+        ingredients = None
+
+    if request.method == 'POST':
+        form = IngredientsForm(request.POST, instance=ingredients)
+
+        if form.is_valid():
+            ingredients = form.save()
+            return redirect('/')
+    else:
+        form = IngredientsForm(instance=ingredients)
+
+    context = {'form': form}
+    return render(request, 'ingredients_form.html', context)
+
+# ============
+
+def lunch_detail(request, id):
+    lunchbox = get_object_or_404(LunchboxModel, id=id)
+
+    allergy = []
+    bit = 0
+    for a in lunchbox.ingredient.all():
+        bit |= a.allergy
+    for a in Allergy.get_choices():
+        if bit & a[0]:
+            allergy.append(a[1])
+    context = {'id': id, 'lunchbox': lunchbox, 'allergy': ', '.join(allergy)}
+    return render(request, 'hankki/lunch_detail.html', context)
 
 
+@login_required
 def lunch_reserve(request):
-    # 🔴 TODO: 백엔드 연동 필요
-    # context = {
-    #     'lunch': {
-    #         'price': lunch.price,
-    #         'stock': lunch.stock,
-    #     },
-    #     'user': {
-    #         'balance': request.user.balance,
-    #     }
-    # }
-    return render(request, 'hankki/lunch_reserve.html')
+    price_sum = 0;
+    queryset = CartItemModel.objects.filter(user=request.user)
+    for item in queryset:
+        lunchbox = item.lunchbox
+        quantity = item.quantity
+        price_sum += (lunchbox.price - lunchbox.discount_price) * quantity
+
+    if request.method == 'POST':
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            if queryset.exists():
+                with transaction.atomic():
+
+                    order = form.save(commit=False)
+                    order.user = request.user
+                    order.status = OrderStatus.PENDING.value
+                    order.price = price_sum
+                    order.save()
+
+                    for item in queryset:
+                        lunchbox = item.lunchbox
+                        quantity = item.quantity
+                        order_item = OrderItemModel(
+                            order=order,
+                            lunchbox=lunchbox,
+                            quantity=quantity,
+                            price=(lunchbox.price - lunchbox.discount_price) * quantity,
+                        )
+                        order_item.save()
+                        item.delete()
+
+                    return redirect('hankki:lunch_complete', id=order.id)
+    else:
+        form = OrderForm()
+
+    context = {'form': form, 'queryset': queryset, 'price_sum': price_sum}
+    return render(request, 'hankki/lunch_reserve.html', context)
 
 
-def lunch_complete(request):
-    # reserve에서 전달받은 데이터 처리
-    hour = request.GET.get('hour', '')
-    minute = request.GET.get('minute', '')
-    pickup_place = request.GET.get('pickup_place', '')
-    quantity = request.GET.get('quantity', '0')
-    total_price = request.GET.get('total_price', '0')
+@login_required
+def lunch_complete(request, id):
+    order = get_object_or_404(OrderModel, id=id)
+    if order.user != request.user:
+        return redirect(request.GET.get('next'))
 
-    # 픽업 장소 코드 → 한글 이름 변환
-    place_map = {
-        'hall': '학생회관 픽업존',
-        'plaza': '연세플라자 픽업존'
-    }
-    pickup_place_name = place_map.get(pickup_place, '선택된 장소 없음')
-
-    # 금액 포맷팅 (천 단위 콤마)
-    try:
-        total_price_formatted = f'{int(total_price):,}'
-    except:
-        total_price_formatted = '0'
+    queryset = order.orderitemmodel_set.all()
 
     # context로 템플릿에 데이터 전달
-    context = {
-        'lunch': {
-            'name': '도시락 패키지 이름',  # 🔴 TODO: DB에서 가져오기
-        },
-        'hour': hour,
-        'minute': minute,
-        'pickup_place_name': pickup_place_name,
-        'quantity': quantity,
-        'total_price': total_price_formatted,
-    }
+    context = {'order': order, 'queryset': queryset}
 
     return render(request, 'hankki/lunch_complete.html', context)
 

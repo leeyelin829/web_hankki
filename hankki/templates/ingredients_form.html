@@ -1,0 +1,13 @@
+{% block content %}
+    <h2>재료 등록</h2>
+    <hr>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button type="submit" class="btn btn-primary">재료 등록</button>
+    </form>
+
+{% endblock content %}

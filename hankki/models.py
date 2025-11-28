@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, IntEnum
 from django.db import models
 from django.conf import settings
 
@@ -23,6 +23,54 @@ class FoodCategory(Enum):
         ]
 
 
+class Allergy(IntEnum):
+    EGG = 1 << 0        # 난류
+    MILK = 1 << 1       # 우유
+    BUCKWHEAT = 1 << 2  # 메밀
+    PEANUT = 1 << 3     # 땅콩
+    SOY = 1 << 4        # 대두
+    WHEAT = 1 << 5      # 밀
+    MACKEREL = 1 << 6   # 고등어
+    CRAB = 1 << 7       # 게
+    SHRIMP = 1 << 8     # 새우
+    PORK = 1 << 9       # 돼지고기
+    PEACH = 1 << 10     # 복숭아
+    TOMATO = 1 << 11    # 토마토
+    SULFITES = 1 << 12  # 아황산염
+    WALNUT = 1 << 13    # 호두
+    CHICKEN = 1 << 14   # 닭고기
+    BEEF = 1 << 15      # 쇠고기
+    SQUID = 1 << 16     # 오징어
+    SHELLFISH = 1 << 17 # 조개류
+    PINE_NUT = 1 << 18  # 잣
+
+    @classmethod
+    def get_choices(cls):
+        return [
+            (cls.EGG.value, '난류'),
+            (cls.MILK.value, '우유'),
+            (cls.BUCKWHEAT.value, '메밀'),
+            (cls.PEANUT.value, '땅콩'),
+            (cls.SOY.value, '대두'),
+            (cls.WHEAT.value, '밀'),
+            (cls.MACKEREL.value, '고등어'),
+            (cls.CRAB.value, '게'),
+            (cls.SHRIMP.value, '새우'),
+            (cls.PORK.value, '돼지고기'),
+            (cls.PEACH.value, '복숭아'),
+            (cls.TOMATO.value, '토마토'),
+            (cls.SULFITES.value, '아황산염'),
+            (cls.WALNUT.value, '호두'),
+            (cls.CHICKEN.value, '닭고기'),
+            (cls.BEEF.value, '쇠고기'),
+            (cls.SQUID.value, '오징어'),
+            (cls.SHELLFISH.value, '조개류'),
+            (cls.PINE_NUT.value, '잣'),
+        ]
+
+
+
+
 class HealthCategory(models.Model):
     name = models.CharField(max_length=50, unique=True)     # 카테고리 이름
     description = models.TextField(blank=True)              # 카테고리 설명
@@ -31,15 +79,32 @@ class HealthCategory(models.Model):
         return self.name
 
 
+
+class IngredientsModel(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    allergy = models.IntegerField()
+
+    def __str__(self):
+        return self.name
+
+    # 비트마스킹으로 알레르기 정보 저장
+    # ① 난류, ② 우유, ③ 메밀, ④ 땅콩, ⑤ 대두, ⑥ 밀, ⑦ 고등어, ⑧ 게, ⑨ 새우, ⑩ 돼지고기
+    # ⑪ 복숭아, ⑫ 토마토, ⑬ 아황산염, ⑭ 호두, ⑮ 닭고기, ⑯ 쇠고기, ⑰ 오징어, ⑱ 조개류, ⑲ 잣
+
+
+
 class LunchboxModel(models.Model):
     # 도시락 정보
     name = models.CharField(max_length=127)                                                             # 도시락 이름
     description = models.TextField()                                                                    # 도시락 설명
     image = models.ImageField(upload_to='lunchbox/', blank=True, null=True)                             # 도시락 이미지
 
+    # 재료 목록
+    ingredient = models.ManyToManyField(IngredientsModel, blank=True, null=True)                              # 재료
+
     # 도시락 카테고리
     food_category = models.CharField(choices=FoodCategory.choices(), max_length=20, blank=True)         # 음식 카테고리
-    health_category = models.ManyToManyField('HealthCategory', related_name='lunchbox', blank=True)     # 건강 관련 카테고리
+    health_category = models.ManyToManyField(HealthCategory, related_name='lunchbox', blank=True)       # 건강 관련 카테고리
 
     # 가격 / 할인 가격 정보
     price = models.IntegerField()                                                                       # 가격

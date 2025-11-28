@@ -102,21 +102,32 @@
         주문하신 도시락이 정상적으로 예약되었어요.
       </p>
 
+      <p class="mh-lunchbox-price">{{ order.status }}</p>
+
       <div class="mh-complete-info">
-        <!-- 🔴 백엔드 연동: {{ lunch.name }} -->
-        <p>도시락: <span class="mh-complete-highlight">{{ lunch.name|default:"도시락 패키지 이름" }}</span></p>
+        {% for item in queryset %}
+          <div class="mh-lunchbox-item">
 
-        <!-- 🔴 백엔드 연동: {{ quantity }} (reserve에서 전달) -->
-        <p>수량: <span class="mh-complete-highlight">{{ quantity|default:"0" }}개</span></p>
+            {% if item.lunchbox.image %}
+              <div class="mh-lunchbox-img-wrap">
+                <img src="{{ item.lunchbox.image.url }}"
+                     alt="{{ item.lunchbox.name }}"
+                     class="mh-lunchbox-img">
+              </div>
+            {% endif %}
 
-        <!-- 🔴 백엔드 연동: {{ total_price }} (reserve에서 전달) -->
-        <p>결제금액: <span class="mh-complete-highlight">{{ total_price|default:"0" }}원</span></p>
+            <div class="mh-lunchbox-details">
+              <p class="mh-lunchbox-name">{{ item.lunchbox.name }}</p>
 
-        <!-- 🔴 백엔드 연동: {{ hour }}시 {{ minute }}분 (reserve에서 전달) -->
-        <p>픽업 시간: <span class="mh-complete-highlight">{{ hour|default:"00" }}시 {{ minute|default:"00" }}분</span></p>
+              <div class="mh-lunchbox-summary">
+                <span class="mh-lunchbox-qty">{{ item.quantity }}개</span>
+              </div>
+            </div>
 
-        <!-- 🔴 백엔드 연동: {{ pickup_place_name }} (reserve에서 전달) -->
-        <p>픽업 장소: <span class="mh-complete-highlight">{{ pickup_place_name|default:"선택된 장소 없음" }}</span></p>
+          </div>
+          {% empty %}
+          <p class="mh-help-text">오류! 주문한 도시락이 없습니다.</p>
+          {% endfor %}
       </div>
 
       <p class="mh-complete-notice">
@@ -129,7 +140,7 @@
 
   <!-- 하단 버튼 -->
   <div class="mh-bottom-btn-wrap mh-complete-btn-wrap">
-    <a class="mh-main-btn" href="{% url 'lunch_detail' %}">다른 도시락 보러가기</a>
+    <a class="mh-main-btn" href="{% url 'hankki:lunchbox_list' %}">다른 도시락 보러가기</a>
   </div>
 
 </div>
