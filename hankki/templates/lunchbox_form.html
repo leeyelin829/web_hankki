@@ -280,10 +280,20 @@
                         <span class="upload-text">이미지 추가</span>
                     </label>
 
-                    <div id="image-preview" class="image-preview-item" style="display: none;">
-                        <img id="preview-image" src="" alt="이미지 미리보기" class="uploaded-image">
-                        <button type="button" id="remove-image-btn" class="remove-btn">X</button>
-                    </div>
+                    {% if form.instance.image %}
+                        <div id="image-preview" class="image-preview-item" style="display: block;">
+                            <img id="preview-image"
+                                 src="{{ form.instance.image.url }}"
+                                 alt="현재 이미지"
+                                 class="uploaded-image">
+                            <button type="button" id="remove-image-btn" class="remove-btn">X</button>
+                        </div>
+                    {% else %}
+                        <div id="image-preview" class="image-preview-item" style="display: none;">
+                            <img id="preview-image" src="" alt="이미지 미리보기" class="uploaded-image">
+                            <button type="button" id="remove-image-btn" class="remove-btn">X</button>
+                        </div>
+                    {% endif %}
 
                     </div>
                 {% if form.image.errors %}
@@ -357,7 +367,7 @@
                            id="id_discount_price" 
                            class="form-input" 
                            placeholder="6500"
-                           value="{{ form.discount_price.value|default:'' }}"
+                           value="{{ form.discount_price.value|default:'0' }}"
                            min="0">
                     <div class="help-text">비워두면 할인 없음</div>
                 </div>
@@ -386,6 +396,11 @@
         const previewContainer = document.getElementById('image-preview');
         const previewImage = document.getElementById('preview-image');
         const removeButton = document.getElementById('remove-image-btn');
+
+        const hasExistingImage = previewContainer && previewContainer.style.display !== 'none';
+        if (hasExistingImage) {
+            uploadLabel.style.display = 'none';
+        }
 
         fileInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
