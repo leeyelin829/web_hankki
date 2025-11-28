@@ -29,10 +29,11 @@
             <thead>
                 <tr>
                     <th style="width: 5%;">ID</th>
-                    <th style="width: 25%;">도시락 이름</th>
+                    <th style="width: 20%;">도시락 이름</th>
+                    <th style="width: 15%;">사진</th>
                     <th style="width: 10%;">카테고리</th>
-                    <th style="width: 20%;">가격</th>
-                    <th style="width: 25%;">설명</th>
+                    <th style="width: 15%;">가격</th>
+                    <th style="width: 20%;">설명</th>
                     <th style="width: 10%;">수량</th>
                     <th style="width: 10%;">추가</th>
                 </tr>
@@ -47,6 +48,15 @@
                         <div style="font-size: 0.8em; color: #007bff;">
                             ({% for hc in lunchbox.health_category.all %}{{ hc.name }}{% if not forloop.last %}, {% endif %}{% endfor %})
                         </div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if lunchbox.image %}
+                            <div>
+                                <img src="{{ lunchbox.image.url }}" alt="image" style="height: 80px;">
+                            </div>
+                        {% else %}
+                            <p>이미지 없음</p>
                         {% endif %}
                     </td>
                     <td>{{ category_name|default:lunchbox.food_category }}</td>

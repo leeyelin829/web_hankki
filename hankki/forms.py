@@ -15,6 +15,7 @@ class LunchboxForm(forms.ModelForm):
         fields = [
             'name',
             'description',
+            'image',
             'food_category',
             'health_category',
             'price',
@@ -22,12 +23,14 @@ class LunchboxForm(forms.ModelForm):
             'stock',
         ]
         widgets = {
+            'image': forms.FileInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'rows': 4}),
             'health_category': forms.CheckboxSelectMultiple,
         }
         labels = {
             'name': '도시락 상품명',
             'description': '상세 설명',
+            'image': '도시락 이미지',
             'food_category': '음식 종류',
             'health_category': '건강 카테고리',
             'price': '판매 가격',

@@ -127,6 +127,11 @@ STATICFILES_DIRS = [
 ]
 
 
+# Media files (User uploads)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+
 # Login/Logout Redirect
 LOGIN_URL = '/auth/login/'
 

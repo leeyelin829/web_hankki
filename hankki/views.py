@@ -57,7 +57,7 @@ def write_lunchbox(request, id=None):
         lunchbox = None
 
     if request.method == 'POST':
-        form = LunchboxForm(request.POST, instance=lunchbox)
+        form = LunchboxForm(request.POST, request.FILES, instance=lunchbox)
 
         if form.is_valid():
             lunchbox = form.save(commit=False)
