@@ -1,23 +1,13 @@
-"""config URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/3.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path
-from django.urls import path, include
+from django.views.generic import RedirectView
+from hankki import views
 
 urlpatterns = [
-    path('', include('hankki.urls')),
+    path('', RedirectView.as_view(url='/lunch_detail/', permanent=False)),
+    path('lunch_detail/', views.lunch_detail, name='lunch_detail'),
+    path('lunch_reserve/', views.lunch_reserve, name='lunch_reserve'),
+    path('lunch_complete/', views.lunch_complete, name='lunch_complete'),
+    path('charge/', views.charge, name='charge'),  # 충전 페이지
     path('admin/', admin.site.urls),
 ]

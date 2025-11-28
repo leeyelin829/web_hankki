@@ -31,14 +31,13 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'hankki.apps.HankkiConfig',
-
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'hankki',  # 이 줄이 있는지 확인
 ]
 
 MIDDLEWARE = [
@@ -124,3 +123,16 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/3.1/howto/static-files/
+
+STATIC_URL = '/static/'  # 이미 있을 수 있음
+
+# 개발 환경에서 static 파일 경로 설정
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',  # 프로젝트 루트의 static 폴더
+]
+
+# 배포 환경에서 static 파일 수집 경로
+STATIC_ROOT = BASE_DIR / 'staticfiles'

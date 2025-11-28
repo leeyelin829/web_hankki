@@ -1,0 +1,231 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>잔액 충전 - 마을한끼</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<div class="phone-frame">
+
+  <!-- 상단 헤더 -->
+  <header class="mh-header">
+    <button class="mh-back-btn" onclick="history.back()">&#x2039; Back</button>
+    <div class="mh-header-title">잔액 충전</div>
+    <div class="mh-header-spacer"></div>
+  </header>
+
+  <!-- 메인 내용 -->
+  <main class="mh-main">
+
+    <!-- 현재 잔액 카드 -->
+    <section class="mh-charge-card">
+      <div class="mh-charge-row">
+        <span class="mh-charge-label">현재 잔액</span>
+        <span class="mh-charge-value" id="current-balance">50,000원</span>
+      </div>
+    </section>
+
+    <!-- 충전금액 선택 카드 -->
+    <section class="mh-charge-card">
+      <h3 class="mh-charge-title">충전금액을 선택하세요</h3>
+
+      <div class="mh-amount-buttons">
+        <button type="button" class="mh-amount-btn" data-amount="10000">10,000원</button>
+        <button type="button" class="mh-amount-btn" data-amount="20000">20,000원</button>
+        <button type="button" class="mh-amount-btn" data-amount="50000">50,000원</button>
+      </div>
+
+      <input type="text" class="mh-amount-input" placeholder="직접 입력하기" id="custom-amount">
+
+      <!-- 안내 문구 -->
+      <p class="mh-charge-warning" id="min-amount-warning">⚠️ 5,000원 이상부터 충전 가능합니다.</p>
+    </section>
+
+    <!-- 결제수단 카드 -->
+    <section class="mh-charge-card">
+      <h3 class="mh-charge-subtitle">결제수단</h3>
+
+      <label class="mh-payment-option">
+        <input type="radio" name="payment" value="village-pay">
+        <span class="mh-payment-text">마을페이머니</span>
+      </label>
+
+      <label class="mh-payment-option">
+        <input type="radio" name="payment" value="card">
+        <span class="mh-payment-text">신용/체크카드</span>
+      </label>
+
+      <label class="mh-payment-option">
+        <input type="radio" name="payment" value="toss">
+        <span class="mh-payment-text">토스페이</span>
+      </label>
+
+      <label class="mh-payment-option">
+        <input type="radio" name="payment" value="kakao" checked>
+        <span class="mh-payment-text">카카오페이</span>
+      </label>
+
+      <label class="mh-payment-option">
+        <input type="radio" name="payment" value="other">
+        <span class="mh-payment-text">기타 결제수단</span>
+      </label>
+    </section>
+
+    <!-- 할인쿠폰 카드 -->
+    <section class="mh-charge-card mh-charge-clickable" onclick="alert('쿠폰 페이지는 준비 중입니다.')">
+      <div class="mh-charge-row">
+        <span class="mh-charge-subtitle">할인쿠폰</span>
+        <span class="mh-charge-badge">3개 보유 →</span>
+      </div>
+      <p class="mh-charge-notice">사용 가능한 쿠폰이 없어요</p>
+    </section>
+
+    <!-- 현금영수증 카드 -->
+    <section class="mh-charge-card">
+      <h3 class="mh-charge-subtitle">현금영수증</h3>
+
+      <label class="mh-receipt-option">
+        <input type="radio" name="receipt" value="none" checked>
+        <span>신청 안 함</span>
+      </label>
+
+      <label class="mh-receipt-option">
+        <input type="radio" name="receipt" value="phone">
+        <span>휴대폰 번호</span>
+      </label>
+      <input type="text" class="mh-receipt-input" id="phone-input" placeholder="010-1234-5678" disabled>
+
+      <label class="mh-receipt-option">
+        <input type="radio" name="receipt" value="business">
+        <span>사업자번호</span>
+      </label>
+      <input type="text" class="mh-receipt-input" id="business-input" placeholder="000-00-00000" disabled>
+    </section>
+
+    <!-- 충전 후 잔액 카드 -->
+    <section class="mh-charge-card">
+      <div class="mh-charge-row">
+        <span class="mh-charge-label">현재 잔액</span>
+        <span class="mh-charge-value">50,000원</span>
+      </div>
+      <div class="mh-charge-row">
+        <span class="mh-charge-label-bold">충전 후 잔액</span>
+        <span class="mh-charge-value-bold" id="after-balance">50,000원</span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 하단 충전 버튼 -->
+  <div class="mh-bottom-btn-wrap">
+    <button class="mh-main-btn" id="charge-btn" onclick="handleCharge()">
+      <span id="charge-amount-text">금액을 선택해주세요</span>
+    </button>
+  </div>
+
+</div>
+
+<script>
+  const CURRENT_BALANCE = 50000;
+  let selectedAmount = 0;
+
+  // 금액 버튼 클릭
+  const amountBtns = document.querySelectorAll('.mh-amount-btn');
+  const customInput = document.getElementById('custom-amount');
+  const afterBalanceSpan = document.getElementById('after-balance');
+  const chargeBtn = document.getElementById('charge-btn');
+  const chargeAmountText = document.getElementById('charge-amount-text');
+  const minWarning = document.getElementById('min-amount-warning');
+
+  amountBtns.forEach(btn => {
+    btn.addEventListener('click', function() {
+      amountBtns.forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      selectedAmount = parseInt(this.dataset.amount);
+      customInput.value = '';
+      customInput.classList.remove('error');
+      minWarning.style.display = 'none';
+      updateAfterBalance();
+    });
+  });
+
+  // 직접 입력 (실시간 검증)
+  customInput.addEventListener('input', function() {
+    amountBtns.forEach(b => b.classList.remove('active'));
+    const value = this.value.replace(/[^0-9]/g, '');
+    selectedAmount = parseInt(value) || 0;
+
+    // 실시간 검증: 5,000원 미만
+    if (selectedAmount > 0 && selectedAmount < 5000) {
+      this.classList.add('error');
+      minWarning.style.display = 'block';
+    } else {
+      this.classList.remove('error');
+      minWarning.style.display = 'none';
+    }
+
+    updateAfterBalance();
+  });
+
+  function updateAfterBalance() {
+    const afterBalance = CURRENT_BALANCE + selectedAmount;
+    afterBalanceSpan.textContent = formatNumber(afterBalance) + '원';
+
+    if (selectedAmount > 0) {
+      chargeAmountText.textContent = formatNumber(selectedAmount) + '원 충전하기';
+      chargeBtn.disabled = false;
+    } else {
+      chargeAmountText.textContent = '금액을 선택해주세요';
+      chargeBtn.disabled = true;
+    }
+  }
+
+  function formatNumber(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  // 현금영수증 입력 필드 활성화/비활성화
+  const receiptOptions = document.querySelectorAll('input[name="receipt"]');
+  const phoneInput = document.getElementById('phone-input');
+  const businessInput = document.getElementById('business-input');
+
+  receiptOptions.forEach(option => {
+    option.addEventListener('change', function() {
+      phoneInput.disabled = this.value !== 'phone';
+      businessInput.disabled = this.value !== 'business';
+    });
+  });
+
+  // 충전하기 버튼 (버튼 클릭 검증)
+  function handleCharge() {
+    // 검증 1: 금액 선택 여부
+    if (selectedAmount === 0) {
+      alert('충전 금액을 선택해주세요.');
+      return;
+    }
+
+    // 검증 2: 최소 금액 (5,000원)
+    if (selectedAmount < 5000) {
+      alert('5,000원 이상부터 충전 가능합니다.');
+      customInput.focus();
+      return;
+    }
+
+    // 충전 성공 시뮬레이션
+    const newBalance = CURRENT_BALANCE + selectedAmount;
+    alert(`${formatNumber(selectedAmount)}원이 충전되었습니다! (테스트)`);
+
+    // reserve 페이지로 이동 (balance 파라미터 전달)
+    window.location.href = `{% url 'lunch_reserve' %}?balance=${newBalance}`;
+  }
+
+  // 초기화
+  updateAfterBalance();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!--
+═══════════════════════════════════════════════════════════════════════
+📌 백엔드 담당자를 위한 연동 가이드 (lunch_complete.html)
+═══════════════════════════════════════════════════════════════════════
+
+🔴 이 페이지에서 백엔드 연동이 필요한 항목:
+
+1️⃣ 백엔드에서 받아올 데이터:
+  - 도시락 이름
+
+2️⃣ lunch_reserve에서 전달받을 데이터 (사용자 입력):
+  - 수량
+  - 결제금액
+  - 픽업 시간 (시, 분)
+  - 픽업 장소
+
+🔍 수정 위치 찾는 방법:
+  - "🔴" 또는 "백엔드 연동" 키워드로 검색하세요
+  - 총 5곳을 수정해야 합니다
+
+📝 수정해야 할 위치:
+  [ ] 1. 도시락 이름 (약 56번째 줄)
+      현재: 도시락 패키지 이름
+      변경: {{ lunch.name }}
+
+  [ ] 2. 수량 (약 59번째 줄)
+      현재: 2개
+      변경: {{ quantity }}개
+
+  [ ] 3. 결제금액 (약 62번째 줄)
+      현재: 18,000원
+      변경: {{ total_price }}원
+
+  [ ] 4. 픽업 시간 (약 65번째 줄)
+      현재: 12시 30분
+      변경: {{ hour }}시 {{ minute }}분
+
+  [ ] 5. 픽업 장소 (약 68번째 줄)
+      현재: 학생회관 픽업존
+      변경: {{ pickup_place_name }}
+
+📦 views.py에서 전달해야 할 context:
+  def lunch_complete(request):
+      # reserve에서 전달받은 데이터
+      hour = request.GET.get('hour')
+      minute = request.GET.get('minute')
+      pickup_place = request.GET.get('pickup_place')
+      quantity = request.GET.get('quantity')
+      total_price = request.GET.get('total_price')
+      
+      # 픽업 장소 한글 변환
+      place_map = {
+          'hall': '학생회관 픽업존',
+          'plaza': '연세플라자 픽업존'
+      }
+      
+      # 금액 포맷팅 (천단위 콤마)
+      total_price_formatted = f'{int(total_price):,}'
+      
+      context = {
+          'lunch': {
+              'name': '도시락 패키지 이름',  # 🔴 DB에서 가져오기
+          },
+          'hour': hour,
+          'minute': minute,
+          'pickup_place_name': place_map.get(pickup_place, ''),
+          'quantity': quantity,
+          'total_price': total_price_formatted,
+      }
+      return render(request, 'hankki/lunch_complete.html', context)
+
+═══════════════════════════════════════════════════════════════════════
+-->
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>예약 완료 - 마을한끼</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<div class="phone-frame">
+
+  <!-- 상단 헤더 -->
+  <header class="mh-header">
+    <button class="mh-back-btn" onclick="history.back()">&#x2039; Back</button>
+    <div class="mh-header-title">예약 완료</div>
+    <div class="mh-header-spacer"></div>
+  </header>
+
+  <!-- 메인 내용 -->
+  <main class="mh-main mh-complete-main">
+    <div class="mh-complete-card">
+
+      <div class="mh-complete-icon">✔</div>
+
+      <h1 class="mh-complete-title">결제가 완료되었습니다</h1>
+      <p class="mh-complete-subtitle">
+        주문하신 도시락이 정상적으로 예약되었어요.
+      </p>
+
+      <div class="mh-complete-info">
+        <!-- 🔴 백엔드 연동: {{ lunch.name }} -->
+        <p>도시락: <span class="mh-complete-highlight">{{ lunch.name|default:"도시락 패키지 이름" }}</span></p>
+
+        <!-- 🔴 백엔드 연동: {{ quantity }} (reserve에서 전달) -->
+        <p>수량: <span class="mh-complete-highlight">{{ quantity|default:"0" }}개</span></p>
+
+        <!-- 🔴 백엔드 연동: {{ total_price }} (reserve에서 전달) -->
+        <p>결제금액: <span class="mh-complete-highlight">{{ total_price|default:"0" }}원</span></p>
+
+        <!-- 🔴 백엔드 연동: {{ hour }}시 {{ minute }}분 (reserve에서 전달) -->
+        <p>픽업 시간: <span class="mh-complete-highlight">{{ hour|default:"00" }}시 {{ minute|default:"00" }}분</span></p>
+
+        <!-- 🔴 백엔드 연동: {{ pickup_place_name }} (reserve에서 전달) -->
+        <p>픽업 장소: <span class="mh-complete-highlight">{{ pickup_place_name|default:"선택된 장소 없음" }}</span></p>
+      </div>
+
+      <p class="mh-complete-notice">
+          맛있는 도시락을 위해<br>
+          예약 시간에 맞춰 픽업해 주세요! 😊
+      </p>
+
+    </div>
+  </main>
+
+  <!-- 하단 버튼 -->
+  <div class="mh-bottom-btn-wrap mh-complete-btn-wrap">
+    <a class="mh-main-btn" href="{% url 'lunch_detail' %}">다른 도시락 보러가기</a>
+  </div>
+
+</div>
+
+</body>
+</html>
