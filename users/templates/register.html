@@ -43,21 +43,6 @@
       margin-bottom: 16px;
     }
 
-    /* 로고/이미지 박스 */
-    .login-hero {
-      width: 100%;
-      height: 140px;
-      border-radius: 12px;
-      border: 1px solid #e0e0e0;
-      background-color: #f8f8f8;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #bbbbbb;
-      font-size: 12px;
-      margin: 8px 0 24px;
-    }
-
     /* 에러 영역 (form_errors.html 포함 부분) */
     .form-errors {
       margin-bottom: 12px;
@@ -83,6 +68,7 @@
       flex-direction: column;
       gap: 12px;
       margin-bottom: 32px;
+      margin-top: 8px;
     }
 
     .field-label {
@@ -140,6 +126,16 @@
       margin-top: 8px;
       text-align: center;
     }
+
+    .helper-text a {
+      color: #ff7f3f;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .helper-text a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -147,11 +143,6 @@
     <!-- 상단 제목 -->
     <div class="screen-title">회원가입</div>
     <div class="screen-subtitle">마을 한끼를 이용할 계정을 만들어 주세요.</div>
-
-    <!-- 이미지/배너 영역 (나중에 로고나 그림 넣을 자리) -->
-    <div class="login-hero">
-      회원가입 배너 / 로고 이미지 영역
-    </div>
 
     <!-- 실제 회원가입 폼 -->
     <form method="post">
@@ -201,12 +192,11 @@
           회원가입
         </button>
 
-        <!-- 필요하면 나중에 로그인 링크 추가 -->
-        <!--
+        <!-- ✅ 로그인으로 이동하는 링크 -->
         <div class="helper-text">
-          이미 계정이 있다면 <a href="{% url 'users:login' %}">로그인</a> 해 주세요.
+          이미 계정이 있으신가요?
+          <a href="{% url 'users:login' %}">로그인 하러 가기</a>
         </div>
-        -->
       </div>
     </form>
   </div>
