@@ -1,199 +1,23 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <title>로그인 | 마을한끼</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- 폰트 -->
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+{% block content %}
+    <h2>도시락 판매자 등록</h2>
+    <hr>
+    <p>다음 약관에 동의해야 도시락 상품을 등록하고 관리할 수 있습니다.</p>
 
-    body {
-      font-family: 'Noto Sans KR', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background-color: #f5f5f5;
-      display: flex;
-      justify-content: center;
-    }
-
-    .app {
-      width: 100%;
-      max-width: 420px;   /* 모바일 폭 */
-      min-height: 100vh;
-      background-color: #ffffff;
-      position: relative;
-      padding: 16px 20px 40px;
-    }
-
-    /* 상단 화면 이름 */
-    .screen-title {
-      font-size: 16px;
-      font-weight: 700;
-      margin-top: 4px;
-      margin-bottom: 4px;
-    }
-
-    .screen-subtitle {
-      font-size: 12px;
-      color: #888;
-      margin-bottom: 16px;
-    }
-
-    /* 로고/이미지 박스 */
-    .login-hero {
-      width: 100%;
-      height: 140px;
-      border-radius: 12px;
-      border: 1px solid #e0e0e0;
-      background-color: #f8f8f8;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #bbbbbb;
-      font-size: 12px;
-      margin: 8px 0 28px;
-    }
-
-    /* 에러 메시지 */
-    .error-box {
-      padding: 10px 14px;
-      background-color: #fff5f5;
-      border: 1px solid #feb2b2;
-      border-radius: 8px;
-      color: #c53030;
-      font-size: 13px;
-      margin-bottom: 16px;
-    }
-
-    /* 입력 영역 */
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-bottom: 32px;
-    }
-
-    .field-label {
-      font-size: 12px;
-      margin-bottom: 4px;
-      color: #555;
-    }
-
-    .input-field {
-      width: 100%;
-      padding: 11px 13px;
-      border-radius: 10px;
-      border: 1px solid #dddddd;
-      font-size: 13px;
-      outline: none;
-    }
-
-    .input-field::placeholder {
-      color: #b3b3b3;
-    }
-
-    .input-field:focus {
-      border-color: #ff7f3f;
-      box-shadow: 0 0 0 2px rgba(255, 127, 63, 0.1);
-    }
-
-    /* 버튼은 화면 아래쪽에 깔리는 느낌으로 */
-    .login-bottom {
-      position: absolute;
-      left: 20px;
-      right: 20px;
-      bottom: 24px;
-    }
-
-    .login-btn {
-      width: 100%;
-      padding: 12px 0;
-      border-radius: 10px;
-      border: none;
-      background-color: #ff7f3f;
-      font-size: 14px;
-      font-weight: 600;
-      color: #ffffff;
-      text-align: center;
-      cursor: pointer;
-    }
-
-    .login-btn:hover {
-      background-color: #ff955f;
-    }
-
-    .helper-text {
-      font-size: 11px;
-      color: #999;
-      margin-top: 12px;
-      text-align: center;
-    }
-
-    .helper-text a {
-      color: #ff7f3f;
-      text-decoration: none;
-    }
-  </style>
-</head>
-<body>
-  <div class="app">
-    <!-- 상단 제목 -->
-    <div class="screen-title">로그인</div>
-    <div class="screen-subtitle">마을 한끼를 이용하려면 먼저 로그인해 주세요.</div>
-
-    <!-- 이미지/배너 영역 (나중에 로고나 그림 넣을 자리) -->
-    <div class="login-hero">
-      로그인 배너 / 로고 이미지 영역
+    <h3>약관 및 책임</h3>
+    <div style="border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; max-height: 200px; overflow-y: scroll; font-size: 0.9em;">
+        본 약관에 동의함으로써 귀하는 상품 정보의 정확성, 식품 안전 기준 준수, 가격 책정의 정당성 등에 대한 법적 책임을 인정하며... (상세 약관 내용)
     </div>
 
-    <!-- 에러 메시지 -->
-    {% if form.errors %}
-    <div class="error-box">
-      아이디 또는 비밀번호가 올바르지 않습니다.
-    </div>
-    {% endif %}
+    <form method="post">
+        {% csrf_token %}
 
-    <!-- 실제 로그인 폼 -->
-    <form method="post" action="{% url 'users:login' %}">
-      {% csrf_token %}
+        {{ form.agreement.label_tag }}
+        {{ form.agreement }}
+        {{ form.agreement.errors }}
 
-      <div class="form-group">
-        <div>
-          <div class="field-label">아이디</div>
-          <input
-            type="text"
-            name="username"
-            id="username"
-            class="input-field"
-            placeholder="아이디를 입력해 주세요"
-            value="{{ form.username.value|default:'' }}">
-        </div>
-
-        <div>
-          <div class="field-label">비밀번호</div>
-          <input
-            type="password"
-            name="password"
-            id="password"
-            class="input-field"
-            placeholder="비밀번호를 입력해 주세요">
-        </div>
-      </div>
-
-      <div class="login-bottom">
-        <button type="submit" class="login-btn">
-          로그인
+        <button type="submit" class="btn btn-primary" style="margin-top: 15px;">
+            약관 동의 및 권한 획득
         </button>
-
-        <div class="helper-text">
-          아직 계정이 없다면 <a href="{% url 'users:register' %}">회원가입</a>을 해주세요.
-        </div>
-      </div>
     </form>
-  </div>
-</body>
-</html>
+
+{% endblock content %}

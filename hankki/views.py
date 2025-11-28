@@ -47,7 +47,7 @@ def write_health_category(request, id=None):
 # ===========
 
 @login_required
-@permission_required('lunchbox_supplier', login_url=reverse_lazy('hankki:supplier'))
+@permission_required('hankki.lunchbox_supplier', login_url=reverse_lazy('hankki:supplier'))
 def write_lunchbox(request, id=None):
     if id:
         lunchbox = get_object_or_404(LunchboxModel, pk=id)
